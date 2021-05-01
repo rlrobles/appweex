@@ -1,0 +1,157 @@
+{% extends 'layoutApp.html' %}
+
+
+{% block body %}
+
+
+<!-- <h2 align="center">WE-EXCHANGE</h2> -->
+<p></p>
+<div class="row">
+
+    <div class="col-md-12" style="margin-bottom: 1em;">
+        <!-- <img style="display:block;margin:auto;" src="../static/img/home/exchange_money_home.jpg" alt=""> -->
+        <!-- <img style="display:block;margin:auto;" src="https://dummyimage.com/300x200/2a98c4/fff" alt="" > -->
+        <h2 align="center">Operación cambio de dolares a soles</h2>
+        <!-- <h5>Tipo de cambio del dólar hoy en Perú</h5> -->
+
+
+        <div class="row">
+            <div class="col-md-6">
+                <h6 name="tcCompra" id="tcCompra" class="data-tc-compra">Tipo de cambio compra es: {{ dataTC.0 }}</h6>
+            </div>
+            <div class="col-md-6">
+                <h6 name="tcVenta" id="tcVenta" class="data-tc-venta">Tipo de cambio venta es: {{ dataTC.1 }}</h6>
+            </div>
+        </div>
+
+
+
+
+        <div class="panel panel-login">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form id="operacion-tc-form" action="/operacion-cambio-post" method="POST" role="form" style="display: block;">
+
+                            <div class="form-group">
+                                <label for="montoEnviar">Envias:</label>
+                                <input type="text" onkeypress='validate(event)' name="montoEnviar" oninput='calcSimulationRecibir()' id="montoEnviar" tabindex="1" class="form-control" placeholder="Envías dólares" value="">
+                            </div>
+                            <div class="form-group">
+                                <label for="montoRecibir">Recibes:</label>
+                                <input type="text" onkeypress='validate(event)' name="montoRecibir" oninput='calcSimulationEnviar()' id="montoRecibir" tabindex="2" class="form-control" placeholder="Recibes soles">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="monedaCambio" id="monedaCambio" tabindex="2" class="form-control" placeholder="Moneda: Dólares a Soles" readonly="true">
+                            </div>
+
+                            <!-- recordarme  -->
+                           <!--  <div class="form-group text-center">
+                                <input type="checkbox" tabindex="3" class="" name="remember" id="remember">
+                                <label for="remember"> Recordarme</label>
+                            </div> -->
+                            
+                            
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-info btn-block" onclick="changeCoinCurrency()" >
+                                            Cambiar moneda
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">   
+                                        <!-- <button type = "submit"  onclick="location.href='/operacion-cambio/cuentas'; enableElementInput()" class="btn btn-info btn-block" >
+                                            Realizar operación
+                                        </button> -->
+                                        <button type = "submit"  onclick=" enableElementInput(); location.href='/operacion-cambio/cuentas'" class="btn btn-info btn-block" >
+                                            Realizar operación
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+                            
+                            <p></p>
+
+                            <p></p>
+
+                           <!--  <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="text-center">
+                                            <a href="/recover-account" tabindex="5" class="forgot-password">¿Has olvidado tu contraseña?</a>
+                                            <p></p>
+                                            <a href="/register" tabindex="5" class="">¿Eres nuevo en We-Exchange?</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                        </form>
+                    </div>    
+                </div>
+
+                <div class="row">
+                    <p></p>
+                </div> 
+
+                <div class="row">
+                    <p></p></div>
+
+                <div class="row">
+                    <p></p></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+</div>
+
+
+
+    
+    <p></p>
+    <div class="row">
+
+
+
+
+        
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+      
+    </div>
+
+       
+{% endblock %}
+
+
+{% block script %}
+
+<script>
+    function enableElementInput(){
+        //$('#monedaCambio').prop('readonly', false);
+        var monedaCambioP = document.getElementById("monedaCambio").placeholder;
+        document.getElementById("monedaCambio").setAttribute("readonly", "false"); 
+        document.getElementById("monedaCambio").value = monedaCambioP;
+        }
+    
+</script>
+
+{% endblock %}

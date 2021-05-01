@@ -1,0 +1,172 @@
+{% extends 'layoutApp.html' %}
+
+
+{% block body %}
+
+
+<!-- <h2 align="center">WE-EXCHANGE</h2> -->
+<p></p>
+<div class="row">
+
+    <div class="col-md-12" style="margin-bottom: 1em;">
+        <!-- <img style="display:block;margin:auto;" src="../static/img/home/exchange_money_home.jpg" alt=""> -->
+        <!-- <img style="display:block;margin:auto;" src="https://dummyimage.com/300x200/2a98c4/fff" alt="" > -->
+        <h2 align="center">Transfiere desde tu banco</h2>
+        <!-- <h5>Tipo de cambio del dólar hoy en Perú</h5> -->
+        <p></p>
+
+        <div class="panel panel-cuentas">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <table class='table table-striped table-bordered bg-white table-sm'>
+                            <thead>
+                                <tr>
+                                    <th>Cambio</th>
+                                    <th>Envio</th>
+                                    <th>Recibo</th>
+                                    <th>Tipo de Cambio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ session["monedaCambio"] }}</td>
+                                <td>{{ session["montoEnviar"] }}</td>
+                                <td>{{ session["montoRecibir"] }}</td>
+                                <td>{{ session["tipoCambio"] }}</td>
+                                
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <p></p>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>Ahora transfiere {{ session["montoEnviar"] }} {{ session["strMonedaEnvio"] }} desde tu Banca por Internet a la siguiente cuenta: </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>Se cuenta con un plazo de 30 minutos a partir de ahora para realizar la transferencia sin perder el beneficio de tipo de cambio</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 offset-md-4">
+                        <div class="card">
+                          <div class="card-body">
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    Número de cuenta: 
+                                </div>
+                                <div class="row">
+                                    Banco: Banco de Crédito del Peru BCP
+                                </div>
+                                <div class="row">
+                                    Titula de la cuenta: We-Exchange S.A.C
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    Tipo de Cuenta: Corriente
+                                </div>
+                                <div class="row">
+                                    Moneda: {{ session["strMonedaRecibo"] }}
+                                </div>
+                                <div class="row">
+                                    Ruc: 
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 offset-md-4">
+                        <p>Hora de inicio: {{ session["strHoraraInicio"] }}   Hora fin:  </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <button class="btn btn-secondary">Ya transferí</button>
+                            <button class="btn btn-primary">Ver mis órdenes</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <p></p>
+                </div> 
+
+                <div class="row">
+                    <p></p></div>
+
+                <div class="row">
+                    <p></p></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+</div>
+
+
+
+    
+    <p></p>
+    <div class="row">
+
+
+
+
+        
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+      
+    </div>
+  
+
+{% endblock %}
+
+
+{% block script %}
+
+<script>
+
+    $(function(){
+
+        $(".dropdown-banco-1").on('click', 'li a', function(){
+            $(".btn-banco-1:first-child").text($(this).text());
+            $(".btn-banco-1:first-child").val($(this).text());
+        });
+
+        $(".dropdown-banco-2").on('click', 'li a', function(){
+            $(".btn-banco-2:first-child").text($(this).text());
+            $(".btn-banco-2:first-child").val($(this).text());
+        });
+
+        $(".dropdown-tipdoc-1").on('click', 'li a', function(){
+            $(".btn-tipdoc-1:first-child").text($(this).text());
+            $(".btn-tipdoc-1:first-child").val($(this).text());
+        });
+
+    });
+        
+</script>
+
+{% endblock %}
