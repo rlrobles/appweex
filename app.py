@@ -45,7 +45,7 @@ def index():
     cur.execute("SELECT * FROM m_cliente")   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
     data = cur.fetchall()
     print("data", data)
-   return render_template("login.html")
+    return render_template("login.html")
 
 if __name__ == '__main__':
    app.run()
