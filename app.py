@@ -19,7 +19,6 @@ import string
 import re
 
 import weexConstants
-basePath = weexConstants.PATH_APPLICATION
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -110,7 +109,7 @@ def ExisteOrden(codorden):
     else:
         return False
 
-""" @app.route(basePath + '/prueba') """
+""" @app.route('/prueba') """
 def TraerTipoCambioDolarSimulacion():
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
@@ -206,7 +205,7 @@ def EsCorrectoPasswordHash2():
         print('Validacion incorrecta')
     return redirect(url_for('login')) 
 
-@app.route(basePath + '/restart-password-f/<id>/<token>')
+@app.route('/restart-password-f/<id>/<token>')
 def get_data_user(id,token):
     cur = mysql.connection.cursor()
     cur.execute("SELECT ID, CORREO_ELECTRONICO, TOKEN FROM m_cliente WHERE ID = %s AND TOKEN = %s", [id,token], )   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
@@ -214,7 +213,7 @@ def get_data_user(id,token):
     return render_template('edit-contact.html', contact = data[0]) 
 
 
-@app.route(basePath + '/mail/<id>/<token>', methods=['GET','POST'])
+@app.route('/mail/<id>/<token>', methods=['GET','POST'])
 def MailClass():
     #apikey = "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"
     
@@ -240,14 +239,14 @@ def MailClass():
         print("exception")
     return "envio de mail"
 
-@app.route(basePath + '/home')
+@app.route('/home')
 def Home():
     #print(str(uuid.uuid4()))
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
     #print(dataTipoCambio)
     return render_template('home.html', dataTC = dataTipoCambio)
 
-@app.route(basePath + '/inicio')
+@app.route('/inicio')
 def Inicio():
     if "user" in session:
         user = session["user"]
@@ -255,12 +254,12 @@ def Inicio():
     else:
         return render_template('inicio.html')
 
-@app.route(basePath + '/logout')
+@app.route('/logout')
 def logout():
     session.pop("user", None)
     return redirect(url_for('login'))
 
-@app.route(basePath + '/cuenta')
+@app.route('/cuenta')
 def Cuenta():
 
     key = open("key.key", "rb").read()
@@ -293,15 +292,15 @@ def Cuenta():
     return render_template('cuenta.html')
 
 
-@app.route(basePath + '/datos-personales')
+@app.route('/datos-personales')
 def DatosPersonales():
     return render_template('datos-personales.html')
 
-@app.route(basePath + '/ordenes')
+@app.route('/ordenes')
 def Ordenes():
     return render_template('ordenes.html')
 
-@app.route(basePath + '/')
+@app.route('/')
 def Redirect():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
     #print(dataTipoCambio)
@@ -309,7 +308,7 @@ def Redirect():
     print(app.config["SERVER_NAME"])
     return render_template('home.html', dataTC = dataTipoCambio)
 
-@app.route(basePath + '/register')
+@app.route('/register')
 def Index(): ## funcion para manejar la peticion
     cur = mysql.connection.cursor() 
     cur.execute('SELECT * FROM de_tipo_documento')
@@ -326,7 +325,7 @@ def Index(): ## funcion para manejar la peticion
     #return 'Hello World'
 
 
-@app.route(basePath + '/add_test_2', methods=['GET','POST'])
+@app.route('/add_test_2', methods=['GET','POST'])
 def add_test_2():
     cur = mysql.connection.cursor() 
     cur.execute('SELECT NOMBRE_TITULAR, NUMERO_CUENTA, NUMDOC FROM m_cuenta_prueba')
@@ -345,7 +344,7 @@ def add_test_2():
 
 
 
-@app.route(basePath + '/test_01', methods=['GET', 'POST'])
+@app.route('/test_01', methods=['GET', 'POST'])
 def test_01():
     
     #key=frt.generate_key()
@@ -394,7 +393,7 @@ def test_01():
 
     return redirect(url_for('Index'))
 
-@app.route(basePath + '/add_test', methods=['GET','POST'])
+@app.route('/add_test', methods=['GET','POST'])
 def add_test():
     if request.method == 'GET':
         return render_template('pruebaEncriptar.html')
@@ -444,7 +443,7 @@ def add_test():
 
 
 
-@app.route(basePath + '/add_client', methods=['GET','POST'])
+@app.route('/add_client', methods=['GET','POST'])
 def add_client():
     print('print inicio add cliente')
     if request.method == 'POST':
@@ -520,7 +519,7 @@ def add_client():
         return redirect(url_for('Index'))
         #return 'received'
 """ 
-@app.route(basePath + '/edit/<id>')
+@app.route('/edit/<id>')
 def get_contact(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM CONTACTS WHERE ID = %s", [id])   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
@@ -528,14 +527,14 @@ def get_contact(id):
     return render_template('edit-contact.html', contact = data[0])   
  """
 
-"""  @app.route(basePath + "/user")
+"""  @app.route("/user")
  def user():
     if "user" in session:
          user = session["user"]
          return f"<h1>{user}</h1>"
     else: """
 
-@app.route(basePath + "/operacion-cambio-post" , methods=['GET','POST'])
+@app.route("/operacion-cambio-post" , methods=['GET','POST'])
 def operacionCambioPost():
     if request.method == 'POST':
         """ dataTipoCambio = TraerTipoCambioDolarSimulacion()
@@ -562,7 +561,7 @@ def operacionCambioPost():
 
 
 
-@app.route(basePath + "/operacion-cambio" , methods=['GET','POST'])
+@app.route("/operacion-cambio" , methods=['GET','POST'])
 def operacionCambio():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
     session["dataTC"] = dataTipoCambio   
@@ -579,11 +578,11 @@ def operacionCambio():
         return render_template("operacion-cambio.html", dataTC = dataTipoCambio,  )
 
 
-@app.route(basePath + "/operacion/validar/<codinterno>", methods=['GET','POST'])
+@app.route("/operacion/validar/<codinterno>", methods=['GET','POST'])
 def operacionValidarOrden(codinterno):
     return render_template("orden.html")
 
-@app.route(basePath + "/procesar-orden", methods=['GET','POST'])
+@app.route("/procesar-orden", methods=['GET','POST'])
 def operacionProcesarOrden():
     if request.method == 'POST' and request.form['procesar_orden'] == 'Procesar':
         montoEnviar = session["montoEnviar"]
@@ -611,7 +610,7 @@ def operacionProcesarOrden():
 
 
 
-@app.route(basePath + "/operacion-cambio/cuentas", methods=['GET','POST'])
+@app.route("/operacion-cambio/cuentas", methods=['GET','POST'])
 def operacionCambioCuentas():
     if request.method == 'POST':
         if "GuardarCuenta" in request.form:
@@ -742,12 +741,12 @@ def operacionCambioCuentas():
         return render_template("cuentas.html")
 
 
-@app.route(basePath + '/login', methods=['GET','POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
     return render_template("login.html")
 
 
-@app.route(basePath + '/recover_account', methods=['GET','POST'])
+@app.route('/recover_account', methods=['GET','POST'])
 def recoverAccount():
     url = "http://localhost:3000/reset_password/"
     if request.method == 'POST':
@@ -787,11 +786,11 @@ def recoverAccount():
         #return render_template("reset-password.html")
 
     
-@app.route(basePath + '/reset-password', methods=['GET','POST'])
+@app.route('/reset-password', methods=['GET','POST'])
 def resetPassword():    
     return render_template("reset-password.html")
 
-@app.route(basePath + '/reset_password/<id>/<token>', methods=['GET','POST'])
+@app.route('/reset_password/<id>/<token>', methods=['GET','POST'])
 def reset_password(id, token):
     if request.method == 'POST':
         print('post_reset_password')
@@ -810,7 +809,7 @@ def reset_password(id, token):
         print('get_reset_password', id, token)
         return render_template("reset-password.html", id = id, token = token)
 
-@app.route(basePath + '/loginValidate', methods=['GET','POST'])
+@app.route('/loginValidate', methods=['GET','POST'])
 def loginValidate():
     if request.method == 'POST':
         session.permanent == True
@@ -838,11 +837,11 @@ def loginValidate():
 
     
 
-@app.route(basePath + '/recover-account', methods=['GET'])
+@app.route('/recover-account', methods=['GET'])
 def recover_account():
     return render_template("recover-account.html")
 
-@app.route(basePath + '/update/<id>', methods = ['POST']) #methods es igual a un arreglo POST
+@app.route('/update/<id>', methods = ['POST']) #methods es igual a un arreglo POST
 def update_contact(id):
     if request.method == 'POST':
         fullname = request.form['fullname']
@@ -860,7 +859,7 @@ def update_contact(id):
         flash('Contact updated successfully')
         return redirect(url_for('Index'))
 
-@app.route(basePath + '/delete/<string:id>')
+@app.route('/delete/<string:id>')
 def delete_contact(id):
     cur = mysql.connection.cursor()
     cur.execute('DELETE FROM CONTACTS WHERE ID = {0}'.format(id))
