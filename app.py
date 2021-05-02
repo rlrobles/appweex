@@ -112,7 +112,7 @@ def ExisteOrden(codorden):
 """ @app.route('/prueba') """
 def TraerTipoCambioDolarSimulacion():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT COMPRA, VENTA FROM TASA_CAMBIO WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
+    cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
     dataTC = data[0]
     cur.close()
