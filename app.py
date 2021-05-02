@@ -91,7 +91,7 @@ def allowed_image_filesize(filesize):
 
 def ExisteCliente(correo):
     cur = mysql.connection.cursor() 
-    cur.execute("SELECT * FROM M_CLIENTE WHERE CORREO_ELECTRONICO = '" + correo + "'")
+    cur.execute("SELECT * FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "'")
     data = cur.fetchall()
     cur.close()
     if(len(data) == 1):
@@ -101,7 +101,7 @@ def ExisteCliente(correo):
 
 def ExisteOrden(codorden):
     cur = mysql.connection.cursor() 
-    cur.execute("SELECT * FROM M_ORDEN WHERE CODORDEN = '" + codorden + "'")
+    cur.execute("SELECT * FROM m_orden WHERE CODORDEN = '" + codorden + "'")
     data = cur.fetchall()
     cur.close()
     if(len(data) == 1):
@@ -120,7 +120,7 @@ def TraerTipoCambioDolarSimulacion():
 
 def TraerDataBancoDeDondeEnvias():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM DE_BANCO WHERE NOMBRE IN ('BCP','INTERBANK')")
+    cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM de_banco WHERE NOMBRE IN ('BCP','INTERBANK')")
     data = cur.fetchall()
     dataBanco = data
     cur.close()
@@ -128,7 +128,7 @@ def TraerDataBancoDeDondeEnvias():
 
 def TraerDataTipDoc():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT ID, DESCRIPCION FROM DE_TIPO_DOCUMENTO")
+    cur.execute("SELECT ID, DESCRIPCION FROM de_tipo_documento")
     data = cur.fetchall()
     dataTipDoc = data
     cur.close()
@@ -136,7 +136,7 @@ def TraerDataTipDoc():
 
 def TraerDataBanco():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM DE_BANCO")
+    cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM de_banco")
     data = cur.fetchall()
     dataBanco = data
     cur.close()
@@ -144,7 +144,7 @@ def TraerDataBanco():
 
 def ObtenerIdMoneda(codigoMoneda):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT IDMONEDA from DE_MONEDA WHERE CODIGO = '" + codigoMoneda + "'")
+    cur.execute("SELECT IDMONEDA from de_moneda WHERE CODIGO = '" + codigoMoneda + "'")
     data = cur.fetchall()
     dataIdMoneda = data
     cur.close()
@@ -152,7 +152,7 @@ def ObtenerIdMoneda(codigoMoneda):
 
 def TraerDataCuentas(id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT IDCUENTA, IDBANCO , NUMERO_CUENTA, NOMBRE_TITULAR, IDMONEDA from M_CUENTA WHERE IDCLIENTE = '" + id + "'")
+    cur.execute("SELECT IDCUENTA, IDBANCO , NUMERO_CUENTA, NOMBRE_TITULAR, IDMONEDA from m_cuenta WHERE IDCLIENTE = '" + id + "'")
     data = cur.fetchall()
     dataCuentasCliente = data
     cur.close()
@@ -160,7 +160,7 @@ def TraerDataCuentas(id):
 
 def ExisteUsuarioResetPass(id, token):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM M_CLIENTE WHERE ID = '" + id + "' AND TOKEN = '" + token + "'")
+    cur.execute("SELECT * FROM m_cliente WHERE ID = '" + id + "' AND TOKEN = '" + token + "'")
     data = cur.fetchall()
     cur.close()
     if(len(data) == 1):
@@ -172,7 +172,7 @@ def ResetPasswordUser(id, token, newPassword):
     newPasswordHash = generate_password_hash(newPassword)
     newToken = str(uuid.uuid4())
     cur = mysql.connection.cursor()
-    cur.execute("UPDATE M_CLIENTE SET PASSWORD_HASH = '" + newPasswordHash +"' , TOKEN = '" + newToken + "' WHERE ID = '" + id + "' AND TOKEN = '" + token + "'")
+    cur.execute("UPDATE m_cliente SET PASSWORD_HASH = '" + newPasswordHash +"' , TOKEN = '" + newToken + "' WHERE ID = '" + id + "' AND TOKEN = '" + token + "'")
     mysql.connection.commit()
     return redirect(url_for('Index'))
 
@@ -187,8 +187,8 @@ def write_fernet_key():
 
 def EsCorrectoPasswordHash(correo, password):
     cur = mysql.connection.cursor() 
-    #cur.execute("SELECT * FROM M_CLIENTE WHERE CORREO_ELECTRONICO = '" + correo + "' AND PASSWORD_HASH = '" + passwordHash + "'" )
-    cur.execute("SELECT PASSWORD_HASH FROM M_CLIENTE WHERE CORREO_ELECTRONICO = '" + correo + "' " )
+    #cur.execute("SELECT * FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "' AND PASSWORD_HASH = '" + passwordHash + "'" )
+    cur.execute("SELECT PASSWORD_HASH FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "' " )
     data = cur.fetchall()
     data2 = data[0]
     passwordHash = data2[0]
@@ -208,7 +208,7 @@ def EsCorrectoPasswordHash2():
 @app.route('/restart-password-f/<id>/<token>')
 def get_data_user(id,token):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT ID, CORREO_ELECTRONICO, TOKEN FROM M_CLIENTE WHERE ID = %s AND TOKEN = %s", [id,token], )   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
+    cur.execute("SELECT ID, CORREO_ELECTRONICO, TOKEN FROM m_cliente WHERE ID = %s AND TOKEN = %s", [id,token], )   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
     data = cur.fetchall()
     return render_template('edit-contact.html', contact = data[0]) 
 
@@ -311,10 +311,10 @@ def Redirect():
 @app.route('/register')
 def Index(): ## funcion para manejar la peticion
     cur = mysql.connection.cursor() 
-    cur.execute('SELECT * FROM DE_TIPO_DOCUMENTO')
+    cur.execute('SELECT * FROM de_tipo_documento')
     data = cur.fetchall()
     cur2 = mysql.connection.cursor()
-    cur2.execute('SELECT * FROM DE_TIPO_PERSONA')
+    cur2.execute('SELECT * FROM de_tipo_persona')
     data2 = cur2.fetchall()
     #filas  = cur2.rowcount
     cur.close()
@@ -328,7 +328,7 @@ def Index(): ## funcion para manejar la peticion
 @app.route('/add_test_2', methods=['GET','POST'])
 def add_test_2():
     cur = mysql.connection.cursor() 
-    cur.execute('SELECT NOMBRE_TITULAR, NUMERO_CUENTA, NUMDOC FROM M_CUENTA_PRUEBA')
+    cur.execute('SELECT NOMBRE_TITULAR, NUMERO_CUENTA, NUMDOC FROM m_cuenta_prueba')
     data = cur.fetchall()
 
     key = open("key.key", "rb").read()
@@ -351,7 +351,7 @@ def test_01():
     key = open("key.key", "rb").read()
 
     cur = mysql.connection.cursor() 
-    cur.execute('SELECT NOMBRE_TITULAR, NUMERO_CUENTA, NUMDOC FROM M_CUENTA_PRUEBA')
+    cur.execute('SELECT NOMBRE_TITULAR, NUMERO_CUENTA, NUMDOC FROM m_cuenta_prueba')
     data = cur.fetchall()
 
 
@@ -433,7 +433,7 @@ def add_test():
 
         cur = mysql.connection.cursor()
         cur.execute("""
-            INSERT INTO M_CUENTA_PRUEBA
+            INSERT INTO m_cuenta_prueba
             VALUES('', %s, %s, %s)
             """, 
         (NombreTitularEncrypted, NumeroCuentaEncrypted, NumeroDocumentoEncrypted))
@@ -507,7 +507,7 @@ def add_client():
         cur = mysql.connection.cursor()
         
         cur.execute("""
-            INSERT INTO M_CLIENTE
+            INSERT INTO m_cliente
             VALUES('', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, 
         (nombre, apellidoPaterno, apellidoMaterno, correoElectronico,celular, generate_password_hash(password), 
@@ -632,7 +632,7 @@ def operacionCambioCuentas():
 
             cur = mysql.connection.cursor()
             cur.execute("""
-                INSERT INTO M_CUENTA
+                INSERT INTO m_cuenta
                 VALUES('', %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
             ( '1', Banco, '0', '1', NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
@@ -684,7 +684,7 @@ def operacionCambioCuentas():
 
             cur = mysql.connection.cursor()
             cur.execute("""
-                INSERT INTO M_ORDEN
+                INSERT INTO m_orden
                 VALUES('', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
             ( codinterno, nro_orden, '1', now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1' )) 
@@ -752,7 +752,7 @@ def recoverAccount():
     if request.method == 'POST':
         correo = request.form['correo']
         cur = mysql.connection.cursor()
-        cur.execute("SELECT ID, CORREO_ELECTRONICO, TOKEN FROM M_CLIENTE WHERE CORREO_ELECTRONICO = %s", [correo])   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
+        cur.execute("SELECT ID, CORREO_ELECTRONICO, TOKEN FROM m_cliente WHERE CORREO_ELECTRONICO = %s", [correo])   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
         data = cur.fetchall()
         data2 = data[0]
         id = data2[0]
