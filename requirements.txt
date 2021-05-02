@@ -1,4 +1,6 @@
+cffi==1.14.5
 click==7.1.2
+cryptography==3.4.7
 Flask==1.1.2
 Flask-MySQLdb==0.2.0
 freeze==0.0.1
@@ -6,4 +8,9 @@ itsdangerous==1.1.0
 Jinja2==2.11.3
 MarkupSafe==1.1.1
 mysqlclient==2.0.3
+pi==0.1.2
+pycparser==2.20
+python-http-client==3.3.2
+sendgrid==6.7.0
+starkbank-ecdsa==1.1.0
 Werkzeug==1.0.1
