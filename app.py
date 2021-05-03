@@ -129,9 +129,12 @@ def apiTipoCambioMonedas():
     #print("data = " + data[0])
     cur.close()
     result = {
-        'dolar': {
-            'compra': data[0][0],
-            'venta': data[0][1]
+        'rates': {
+            'USD': 1,
+            'PEN': {
+                'compra': data[0][0],
+                'venta': data[0][1]
+            }
         }
     }
     return jsonify(result)
