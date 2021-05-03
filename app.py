@@ -139,6 +139,25 @@ def apiTipoCambioMonedas():
     }
     return jsonify(result)
 
+@app.route('/weex/actualizar/tasa-cambio/v1', methods=['POST'])
+def updateTipoCambioInvesting():
+    requestBody = request.get_json()
+    #cur = mysql.connection.cursor()
+    #cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
+    #data = cur.fetchall()
+    #print(data[0][0])
+    #print(data[0][1])
+    #dataTC = data[0]
+    #print("data = " + data[0])
+    #cur.close()
+    result = {
+        'response': {
+            'code': '000',
+            'message': 'Se actualizó el tipo de cambio correctamente'
+        }
+    }
+    return jsonify(requestBody)
+
 def TraerDataBancoDeDondeEnvias():
     cur = mysql.connection.cursor()
     cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM de_banco WHERE NOMBRE IN ('BCP','INTERBANK')")
