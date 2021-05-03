@@ -296,9 +296,19 @@ def Cuenta():
 def DatosPersonales():
     return render_template('datos-personales.html')
 
+
+def listarOrdenesByIdCliente(idCliente = 1):
+    cur = mysql.connection.cursor() 
+    #cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = '" + idCliente + "'")
+    cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = 1")
+    data = cur.fetchall()
+    cur.close()
+    return data
+
 @app.route('/ordenes')
 def Ordenes():
-    return render_template('ordenes.html')
+    listOrdenes = listarOrdenesByIdCliente(1)
+    return render_template('ordenes.html', data = listOrdenes)
 
 @app.route('/')
 def Redirect():
@@ -449,6 +459,7 @@ def add_client():
     if request.method == 'POST':
         ## Validación de la carga de imagenes ############################
         ## Validación de la foto del cliente ############################
+        """
         if request.files:   
             if not allowed_image_filesize(request.cookies.get("filesizeFoto")) or not allowed_image_filesize(request.cookies.get("filesizeFotoDoc")):
                 print('El archivo excedio el tamano maximo')
@@ -479,9 +490,13 @@ def add_client():
             imagenFoto.save(os.path.join(app.config["IMAGE_UPLOADS"], filenameFoto))
             imagenFotoDocFrontal.save(os.path.join(app.config["IMAGE_UPLOADS"], filenameFotoDocFrontal))
             imagenFotoDocPosterior.save(os.path.join(app.config["IMAGE_UPLOADS"], filenameFotoDocPosterior))
-        
+        """
         
     #################################################################################################
+
+        filenameFoto = ''
+        filenameFotoDoc = ''
+        filenameFotoDocPosterior = ''
 
         nombre = request.form['Nombre']
         apellidoPaterno = request.form['ApellidoPaterno']
@@ -497,9 +512,9 @@ def add_client():
         tipoPersona = request.form.get('TipoPersona', None)
         ocupacion = request.form['Ocupacion']
         #fotoCliente = request.form['FotoCliente']
-        fotoCliente = app.config["IMAGE_UPLOADS"] + "\\" + filenameFoto
-        fotoDocumento = app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDoc
-        fotoDocumentoB = app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDocPosterior
+        fotoCliente = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFoto
+        fotoDocumento = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDoc
+        fotoDocumentoB = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDocPosterior
         #fotoDocumento = request.form['FotoDocumento']
 
         now = datetime.now()
@@ -508,11 +523,11 @@ def add_client():
         
         cur.execute("""
             INSERT INTO m_cliente
-            VALUES('', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES(null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, 
         (nombre, apellidoPaterno, apellidoMaterno, correoElectronico,celular, generate_password_hash(password), 
         token, tipoDocumento, numeroDocumento, fechaEmisionDocumento, personaPolitica, tipoPersona, ocupacion,
-        fotoCliente, fotoDocumento, now))#uso de tupla
+        fotoCliente, fotoDocumento, fotoDocumentoB, now))#uso de tupla
         mysql.connection.commit()    
 
         flash('Usuario registrado correctamente')
@@ -868,5 +883,5 @@ def delete_contact(id):
     return redirect(url_for('Index'))
 
 if __name__ == '__main__':
-   app.run()
+   app.run(debug=True)
 
