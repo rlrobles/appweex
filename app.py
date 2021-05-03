@@ -1,5 +1,5 @@
 ## del modulo flask importa la clase Flask
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify 
 from flask_mysqldb import MySQL  
 from werkzeug.utils import secure_filename
 from cryptography.fernet import Fernet
@@ -117,6 +117,24 @@ def TraerTipoCambioDolarSimulacion():
     dataTC = data[0]
     cur.close()
     return dataTC
+
+@app.route('/weex/tasa-cambio/v1', methods=['GET'])
+def apiTipoCambioMonedas():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
+    data = cur.fetchall()
+    print(data[0][0])
+    print(data[0][1])
+    #dataTC = data[0]
+    #print("data = " + data[0])
+    cur.close()
+    result = {
+        'dolar': {
+            'compra': data[0][0],
+            'venta': data[0][1]
+        }
+    }
+    return jsonify(result)
 
 def TraerDataBancoDeDondeEnvias():
     cur = mysql.connection.cursor()
@@ -248,8 +266,13 @@ def Home():
 
 @app.route('/inicio')
 def Inicio():
-    if "user" in session:
-        user = session["user"]
+    if "user" == "user":
+        session.permanent == True
+        #user = session["user"]
+        print("user ==================")
+        session['user111'] = 'dddddddddddddddddddddd'
+        session['username'] = session['user111']
+        #print(session['user111'])
         return render_template('inicio.html')
     else:
         return render_template('inicio.html')
@@ -841,7 +864,7 @@ def loginValidate():
                 print('Inicio sesion correcto')
                 #EsCorrectoPasswordHash(user,password)   
                 #return render_template("index.html")
-                session["user"] = user
+                session['user111'] = 'ddfdddddf'
                 return redirect(url_for('Inicio'))
             else:
                 print('password incorrecto')
