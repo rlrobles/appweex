@@ -142,6 +142,20 @@ def apiTipoCambioMonedas():
 @app.route('/weex/actualizar/tasa-cambio/v1', methods=['POST'])
 def updateTipoCambioInvesting():
     requestBody = request.get_json()
+    print(requestBody['compra'])
+    # type(requestBody)
+    # print(type(requestBody))
+    params = {
+        "id": requestBody['id'],
+        "compra": requestBody['compra'],
+        "venta": requestBody['venta']
+    }
+    print(params)
+    query = "UPDATE tasa_cambio SET COMPRA = {data[compra]}, VENTA = {data[venta]} WHERE ID = {data[id]}"
+    query = query.format(data=params)
+    print(query)
+    #print("{title} try to find {aim} in the dataset".format(title=tool, aim=goal))
+
     #cur = mysql.connection.cursor()
     #cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     #data = cur.fetchall()
