@@ -156,6 +156,7 @@ def apiUpdateTipoCambioInvesting(payload):
 
 def getTipoCambioInvesting(url):
     tipoCambio = webscraping.getContentPage(url)
+    tipoCambio = tipoCambio.replace(",", ".")
     print(tipoCambio)
     return tipoCambio
 
@@ -163,7 +164,7 @@ def jobUpdateTipoCambio():
     print("I'm working...")
     now = datetime.now()
     print(now)
-    valorTipoCambio = getTipoCambioInvesting('https://es.investing.com/currencies/pen-usd')
+    valorTipoCambio = getTipoCambioInvesting('https://es.investing.com/currencies/usd-pen')
     data = {
         "id": 1,
         "compra": valorTipoCambio,
@@ -186,7 +187,7 @@ def updateTipoCambioInvesting():
     #print(params)
     query = "UPDATE tasa_cambio SET COMPRA = {data[compra]}, VENTA = {data[venta]} WHERE ID = {data[id]}"
     query = query.format(data=params)
-    #print(query)
+    print(query)
     cur = mysql.connection.cursor()
     cur.execute(query)
     mysql.connection.commit()
@@ -967,10 +968,19 @@ def delete_contact(id):
     flash('Contact Removed Successfully')
     return redirect(url_for('Index'))
 
+def mainJob():
+    print('Starting Job')
+    schedule.every(1).minutes.do(jobUpdateTipoCambio)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+    print('Ending Job')
+
 if __name__ == '__main__':
    app.run(debug=True)
    schedule.every(1).minutes.do(jobUpdateTipoCambio)
+   print("ffffffff")
    while True:
-       schedule.run_pending()
-       time.sleep(1)
+        schedule.run_pending()
+        time.sleep(1)
 
