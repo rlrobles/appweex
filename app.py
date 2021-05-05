@@ -1,11 +1,12 @@
 ## del modulo flask importa la clase Flask
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify 
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, make_response 
 from flask_mysqldb import MySQL  
 from werkzeug.utils import secure_filename
 from cryptography.fernet import Fernet
 #from flask_mail import Mail
 from cryptography.fernet import Fernet as frt
-
+import json
+import requests
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from copy import deepcopy
@@ -20,6 +21,10 @@ import re
 
 import weexConstants
 from werkzeug.security import generate_password_hash, check_password_hash
+
+import schedule
+import time
+import webscraping
 
 app = Flask(__name__)
 
@@ -137,12 +142,40 @@ def apiTipoCambioMonedas():
             }
         }
     }
+
+    jobUpdateTipoCambio()
     return jsonify(result)
+
+def apiUpdateTipoCambioInvesting(payload):
+    url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
+    body = json.dumps(payload)
+    #print("body:", body)
+    response = requests.post(url, data = body)
+    print(response.status_code)
+    return response.json()
+
+def getTipoCambioInvesting(url):
+    tipoCambio = webscraping.getContentPage(url)
+    print(tipoCambio)
+    return tipoCambio
+
+def jobUpdateTipoCambio():
+    print("I'm working...")
+    now = datetime.now()
+    print(now)
+    valorTipoCambio = getTipoCambioInvesting('https://es.investing.com/currencies/pen-usd')
+    data = {
+        "id": 1,
+        "compra": valorTipoCambio,
+        "venta": valorTipoCambio
+    }
+    response = apiUpdateTipoCambioInvesting(data)
+    print(response)
 
 @app.route('/weex/actualizar/tasa-cambio/v1', methods=['POST'])
 def updateTipoCambioInvesting():
-    requestBody = request.get_json()
-    print(requestBody['compra'])
+    requestBody = request.get_json(force=True)
+    #print(requestBody['compra'])
     # type(requestBody)
     # print(type(requestBody))
     params = {
@@ -150,27 +183,20 @@ def updateTipoCambioInvesting():
         "compra": requestBody['compra'],
         "venta": requestBody['venta']
     }
-    print(params)
+    #print(params)
     query = "UPDATE tasa_cambio SET COMPRA = {data[compra]}, VENTA = {data[venta]} WHERE ID = {data[id]}"
     query = query.format(data=params)
-    print(query)
-    #print("{title} try to find {aim} in the dataset".format(title=tool, aim=goal))
-
-    #cur = mysql.connection.cursor()
-    #cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
-    #data = cur.fetchall()
-    #print(data[0][0])
-    #print(data[0][1])
-    #dataTC = data[0]
-    #print("data = " + data[0])
-    #cur.close()
+    #print(query)
+    cur = mysql.connection.cursor()
+    cur.execute(query)
+    mysql.connection.commit()
     result = {
         'response': {
             'code': '000',
             'message': 'Se actualizó el tipo de cambio correctamente'
         }
     }
-    return jsonify(requestBody)
+    return jsonify(result)
 
 def TraerDataBancoDeDondeEnvias():
     cur = mysql.connection.cursor()
@@ -943,4 +969,8 @@ def delete_contact(id):
 
 if __name__ == '__main__':
    app.run(debug=True)
+   schedule.every(1).minutes.do(jobUpdateTipoCambio)
+   while True:
+       schedule.run_pending()
+       time.sleep(1)
 

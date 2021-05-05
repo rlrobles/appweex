@@ -10,13 +10,14 @@ def getContentPage(url):
     webpage = urlopen(req, timeout=10)
     contentPage = webpage.read()
     statusCode = webpage.getcode()
-    print(contentPage)
-    print(statusCode)
+    #print(contentPage)
+    #print(statusCode)
     soup = BeautifulSoup(contentPage, "html.parser")
     #print(soup.find(id='last_last'))
     changeRate = soup.find(id='last_last')
     changeRateText = changeRate.string
-    print(changeRateText)
+    #print(changeRateText)
+    return changeRateText
 
 def existsValue(content):
     if content != "":
@@ -43,5 +44,5 @@ def validateStatusCode(url):
     print(response_status) """
       
 
-existsValue('<span class="arial_26 inlineblock pid-2177-last" dir="ltr" id="last_last">3,7833</span>')
+#existsValue('<span class="arial_26 inlineblock pid-2177-last" dir="ltr" id="last_last">3,7833</span>')
 getContentPage('https://es.investing.com/currencies/usd-pen')
