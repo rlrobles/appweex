@@ -979,9 +979,9 @@ def mainJob():
 
 if __name__ == '__main__':
    app.run(debug=True)
-#    schedule.every(1).minutes.do(jobUpdateTipoCambio)
-#    print("ffffffff")
-#    while True:
-#         schedule.run_pending()
-#         time.sleep(1)
+   schedule.every(1).minutes.do(jobUpdateTipoCambio)
+   print("ffffffff")
+   while True:
+        schedule.run_pending()
+        time.sleep(1)
 
