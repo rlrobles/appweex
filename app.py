@@ -147,8 +147,8 @@ def apiTipoCambioMonedas():
     return jsonify(result)
 
 def apiUpdateTipoCambioInvesting(payload):
-    url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
-    #url = 'http://demo.weex.pe/weex/actualizar/tasa-cambio/v1'
+    #url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
+    url = 'http://demo.weex.pe/weex/actualizar/tasa-cambio/v1'
     body = json.dumps(payload)
     #print("body:", body)
     response = requests.post(url, data = body)
