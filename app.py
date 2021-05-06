@@ -153,9 +153,11 @@ def apiUpdateTipoCambioInvesting(payload):
     body = json.dumps(payload)
     print("Dumps")
     #print("body:", body)
-    response = requests.post(url, data = body)
-    print("Ok?")
+    header = {'content-type': 'application/json'}
+    response = requests.post(url, headers = header,  data = body)
+    print("Ok")
     print(response.status_code)
+    print("Ok2")
     return response.json()
 
 def getTipoCambioInvesting(url):
@@ -988,4 +990,3 @@ if __name__ == '__main__':
    while True:
         schedule.run_pending()
         time.sleep(1)
-        
