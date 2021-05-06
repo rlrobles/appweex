@@ -1,6 +1,6 @@
 ## del modulo flask importa la clase Flask
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, make_response 
-from flask_mysqldb import MySQL  
+from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 from cryptography.fernet import Fernet
 #from flask_mail import Mail
@@ -149,9 +149,12 @@ def apiTipoCambioMonedas():
 def apiUpdateTipoCambioInvesting(payload):
     #url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
     url = 'http://demo.weex.pe/weex/actualizar/tasa-cambio/v1'
+    print("Antes de dumps")
     body = json.dumps(payload)
+    print("Dumps")
     #print("body:", body)
     response = requests.post(url, data = body)
+    print("Ok?")
     print(response.status_code)
     return response.json()
 
@@ -171,6 +174,7 @@ def jobUpdateTipoCambio():
         "compra": valorTipoCambio,
         "venta": valorTipoCambio
     }
+    print(data)
     response = apiUpdateTipoCambioInvesting(data)
     print(response)
 
@@ -984,4 +988,4 @@ if __name__ == '__main__':
    while True:
         schedule.run_pending()
         time.sleep(1)
-
+        
