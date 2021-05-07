@@ -139,14 +139,17 @@ def apiTipoCambioMonedas():
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
     print(data[0][0])
+    equivalenteUSD = 100 / data[0][0]
+    equivalentePEN = data[0][1]
     print(data[0][1])
     #dataTC = data[0]
     #print("data = " + data[0])
     cur.close()
     result = {
         'rates': {
-            'USD': 1,
-            'PEN': {
+            'USD': equivalenteUSD,
+            'PEN': equivalentePEN,  
+            'Tasas': {
                 'compra': data[0][0],
                 'venta': data[0][1]
             }
@@ -156,12 +159,6 @@ def apiTipoCambioMonedas():
     ##jobUpdateTipoCambio()
     return jsonify(result)
 
-#Testeando
-@app.route('/weex/tasa-cambio/v1', methods=['POST'])
-def apiActualizarTasaDeInvesting():
-    
-    response = jobUpdateTipoCambio()
-    return jsonify(response)
 
 def apiUpdateTipoCambioInvesting(payload):
     #url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
