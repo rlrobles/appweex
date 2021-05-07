@@ -153,8 +153,8 @@ def apiTipoCambioMonedas():
     ##jobUpdateTipoCambio()
     return jsonify(result)
 
-@app.route('/weex/tasa-cambio/v1/<moneda>', methods=['GET'])
-def apiTipoCambioMonedashome():
+@app.route('/weex/tasa-cambio/v1/<moneda>', methods=['POST'])
+def apiTipoCambioMonedashome(moneda):
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
