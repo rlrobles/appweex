@@ -155,8 +155,7 @@ def apiTipoCambioMonedas():
                 'venta': data[0][1]
             }
         }
-    }
-
+        
     ##jobUpdateTipoCambio()
     return jsonify(result)
 
