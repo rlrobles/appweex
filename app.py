@@ -5,16 +5,18 @@ def sensor():
     """ Function for test purposes. """
     print("Scheduler is alive!")
 
-sched = BackgroundScheduler(daemon=True)
-sched.add_job(sensor,'interval',minutes=1)
-sched.start()
+#sensor()
+# sched = BackgroundScheduler(daemon=True)
+# sched.add_job(sensor,'interval',minutes=1)
+# sched.start()
 
 app = Flask(__name__)
 
-@app.route("/home")
+@app.route("/home", methods=['GET'])
 def home():
     """ Function for test purposes. """
+    print("Scheduler is alive!")
     return "Welcome Home :) !"
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
