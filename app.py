@@ -1,6 +1,6 @@
 ## del modulo flask importa la clase Flask
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, make_response 
-from flask_mysqldb import MySQL  
+from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 from cryptography.fernet import Fernet
 #from flask_mail import Mail
@@ -25,6 +25,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import schedule
 import time
 import webscraping
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 
@@ -143,15 +144,23 @@ def apiTipoCambioMonedas():
         }
     }
 
-    jobUpdateTipoCambio()
+    ##jobUpdateTipoCambio()
     return jsonify(result)
+
+#Testeando
+@app.route('/weex/tasa-cambio/v1', methods=['POST'])
+def apiActualizarTasaDeInvesting():
+    
+    response = jobUpdateTipoCambio()
+    return jsonify(response)
 
 def apiUpdateTipoCambioInvesting(payload):
     #url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
     url = 'http://demo.weex.pe/weex/actualizar/tasa-cambio/v1'
     body = json.dumps(payload)
     #print("body:", body)
-    response = requests.post(url, data = body)
+    header = {'content-type': 'application/json'}
+    response = requests.post(url, headers = header,  data = body)
     print(response.status_code)
     return response.json()
 
@@ -171,6 +180,7 @@ def jobUpdateTipoCambio():
         "compra": valorTipoCambio,
         "venta": valorTipoCambio
     }
+    print(data)
     response = apiUpdateTipoCambioInvesting(data)
     print(response)
 
@@ -979,9 +989,15 @@ def mainJob():
 
 if __name__ == '__main__':
    app.run(debug=True)
-   schedule.every(1).minutes.do(jobUpdateTipoCambio)
-   print("ffffffff")
-   while True:
-        schedule.run_pending()
-        time.sleep(1)
+   ##schedule.every(1).minutes.do(jobUpdateTipoCambio)
+   ##print("ffffffff")
+   ##while True:
+   ##     schedule.run_pending()
+   ##     time.sleep(1)
 
+   #scheduler = BackgroundScheduler()
+   #scheduler.add_job(func=jobUpdateTipoCambio, trigger="interval", seconds=60)
+   #scheduler.start()
+
+   # Shut down the scheduler when exiting the app
+   #jobUpdateTipoCambio.register(lambda: scheduler.shutdown())
