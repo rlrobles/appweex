@@ -996,8 +996,8 @@ def mainJob():
         time.sleep(1)
     print('Ending Job')
 
-# if __name__ == '__main__':
-#    app.run(debug=True)
+if __name__ == '__main__':
+   app.run(debug=True)
    ##schedule.every(1).minutes.do(jobUpdateTipoCambio)
    ##print("ffffffff")
    ##while True:
