@@ -999,9 +999,8 @@ if __name__ == '__main__':
    ##     schedule.run_pending()
    ##     time.sleep(1)
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=jobUpdateTipoCambio, trigger="interval", seconds=60)
-    scheduler.start()
-
-    # Shut down the scheduler when exiting the app
-    atexit.register(lambda: scheduler.shutdown())
+   scheduler = BackgroundScheduler()
+   scheduler.add_job(func=jobUpdateTipoCambio, trigger="interval", seconds=60)
+   scheduler.start()
+   # Shut down the scheduler when exiting the app
+   jobUpdateTipoCambio.register(lambda: scheduler.shutdown())
