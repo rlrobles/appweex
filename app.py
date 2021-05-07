@@ -139,7 +139,7 @@ def apiTipoCambioMonedas():
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
     print(data[0][0])
-    equivalenteUSD = 100 / data[0][0]
+    equivalenteUSD = 1 / data[0][0]
     equivalentePEN = data[0][1]
     print(data[0][1])
     #dataTC = data[0]
