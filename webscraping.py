@@ -15,12 +15,10 @@ def getContentPage(url):
     soup = BeautifulSoup(contentPage, "html.parser")
     #print(soup.find(id='last_last'))
     ##changeRate = soup.find(id='last_last')
-    changeRateB = soup.find_all('div', class_='inlineblock pid-2177-bid')
-    
-    changeRateBuy = changeRateB.string
+    changeRateBuy = soup.find('span', class_='inlineblock pid-2177-bid')
+    changeRateBuy = changeRateBuy.string
 
-    changeRateS = soup.find_all('div', class_= 'inlineblock pid-2177-ask')
-    changeRateSale = changeRateS.string
+    changeRateSale = soup.find('span', class_= 'inlineblock pid-2177-ask')
+    changeRateSale = changeRateSale.string
 
-    #print(changeRateText)
     return changeRateBuy, changeRateSale

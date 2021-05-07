@@ -28,7 +28,6 @@ def getTipoCambioInvesting(url):
     tipoCambioCompra = tipoCambioCompra.replace(",", ".")
     tipoCambioVenta = tipoCambioVenta.replace(",", ".")
 
-    print(tipoCambio)
     return tipoCambioCompra, tipoCambioVenta
 
 def jobUpdateTipoCambio():
@@ -38,7 +37,7 @@ def jobUpdateTipoCambio():
     valorTipoCambioCompra, valorTipoCambioVenta = getTipoCambioInvesting('https://es.investing.com/currencies/usd-pen')
     data = {
         "id": 1,
-        "compra": valorTipoCambio,
+        "compra": valorTipoCambioCompra,
         "venta": valorTipoCambioVenta
     }
     print(data)
