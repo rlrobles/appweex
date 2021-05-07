@@ -6,7 +6,7 @@ def sensor():
     print("Scheduler is alive!")
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(sensor,'interval',minutes=60)
+sched.add_job(sensor,'interval',minutes=1)
 sched.start()
 
 app = Flask(__name__)
