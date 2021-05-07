@@ -149,7 +149,7 @@ def apiTipoCambioMonedas():
         'rates': {
             'USD': equivalenteUSD,
             'PEN': equivalentePEN
-            }
+            },
         'ratesBD': {
                 'compra': data[0][0],
                 'venta': data[0][1]
