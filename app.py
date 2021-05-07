@@ -27,6 +27,15 @@ import time
 import webscraping
 from apscheduler.schedulers.background import BackgroundScheduler
 
+
+def sensor():
+    """ Function for test purposes. """
+    print("Scheduler is alive!")
+
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(sensor,'interval',minutes=1)
+sched.start()
+
 app = Flask(__name__)
 
 app = Flask(__name__,
