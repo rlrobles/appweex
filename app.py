@@ -157,15 +157,11 @@ def apiActualizarTasaDeInvesting():
 def apiUpdateTipoCambioInvesting(payload):
     #url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
     url = 'http://demo.weex.pe/weex/actualizar/tasa-cambio/v1'
-    print("Antes de dumps")
     body = json.dumps(payload)
-    print("Dumps")
     #print("body:", body)
     header = {'content-type': 'application/json'}
     response = requests.post(url, headers = header,  data = body)
-    print("Ok")
     print(response.status_code)
-    print("Ok2")
     return response.json()
 
 def getTipoCambioInvesting(url):
@@ -999,8 +995,9 @@ if __name__ == '__main__':
    ##     schedule.run_pending()
    ##     time.sleep(1)
 
-   scheduler = BackgroundScheduler()
-   scheduler.add_job(func=jobUpdateTipoCambio, trigger="interval", seconds=60)
-   scheduler.start()
+   #scheduler = BackgroundScheduler()
+   #scheduler.add_job(func=jobUpdateTipoCambio, trigger="interval", seconds=60)
+   #scheduler.start()
+
    # Shut down the scheduler when exiting the app
-   jobUpdateTipoCambio.register(lambda: scheduler.shutdown())
+   #jobUpdateTipoCambio.register(lambda: scheduler.shutdown())
