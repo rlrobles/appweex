@@ -13,8 +13,8 @@ def sensor():
     print("Scheduler is alive!")
 
 def apiUpdateTipoCambioInvesting(payload):
-    url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
-    #url = 'http://demo.weex.pe/weex/actualizar/tasa-cambio/v1'
+    #url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
+    url = 'http://demo.weex.pe/weex/actualizar/tasa-cambio/v1'
     body = json.dumps(payload)
     #print("body:", body)
     header = {'content-type': 'application/json'}
