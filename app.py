@@ -153,7 +153,7 @@ def apiTipoCambioMonedas():
     ##jobUpdateTipoCambio()
     return jsonify(result)
 
-@app.route('/weex/tasa-cambio/v1/moneda', methods=['GET'])
+@app.route('/weex/tasa-cambio/v1/<moneda>', methods=['GET'])
 def apiTipoCambioMonedas():
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
@@ -168,14 +168,16 @@ def apiTipoCambioMonedas():
                 'USD': equivalenteUSD,
                 'PEN': 1
                 }
-            };
+            }
+
     if (moneda == 'USD'):
         result = {
             'rates': {
                 'USD': 1,
                 'PEN': equivalentePEN
                 }
-            };
+            }
+            
     return jsonify(result)
 
 def apiUpdateTipoCambioInvesting(payload):
