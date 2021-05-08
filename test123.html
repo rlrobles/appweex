@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1 id="display">Display some text</h1>
+    <script>
+        fetch('http://localhost:5000/weex/tasa-cambio/v1/PEN')
+        //fetch('http://demo.weex.pe/weex/tasa-cambio/v1')
+        //fetch('http://demo.weex.pe/weex/tasa-cambio/v1/PEN')
+        .then(function(response) {
+            console.log('retorna valor')
+            return response.json();
+        })
+        .then(function(myJson) {
+            document.getElementById('display').innerHTML = myJson['rates']['USD'];
+        })
+    </script>
+</body>
+</html>

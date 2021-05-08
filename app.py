@@ -12,7 +12,7 @@ from sendgrid.helpers.mail import Mail
 from copy import deepcopy
 from datetime import datetime
 from datetime import timedelta
-
+from flask_cors import CORS, cross_origin
 import os
 import uuid
 import random
@@ -37,7 +37,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # sched.start()
 
 app = Flask(__name__)
-
+#CORS(app)
 app = Flask(__name__,
             static_url_path='', 
             static_folder='static',
@@ -154,6 +154,7 @@ def apiTipoCambioMonedas():
     return jsonify(result)
 
 @app.route('/weex/tasa-cambio/v1/<moneda>', methods=['GET'])
+@cross_origin()
 def apiTipoCambioMonedashome(moneda):
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
