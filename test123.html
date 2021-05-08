@@ -9,15 +9,15 @@
 <body>
     <h1 id="display">Display some text</h1>
     <script>
-        fetch('http://localhost:5000/weex/tasa-cambio/v1/PEN')
+        //fetch('http://localhost:5000/weex/tasa-cambio/v1/PEN')
         //fetch('http://demo.weex.pe/weex/tasa-cambio/v1')
-        //fetch('http://demo.weex.pe/weex/tasa-cambio/v1/PEN')
+        fetch('http://demo.weex.pe/weex/tasa-cambio/v1/PEN')
         .then(function(response) {
             console.log('retorna valor')
             return response.json();
         })
         .then(function(myJson) {
-            document.getElementById('display').innerHTML = myJson['rates']['USD'];
+            document.getElementById('display').innerHTML = myJson['rates']['PEN'];
         })
     </script>
 </body>

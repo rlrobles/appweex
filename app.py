@@ -780,6 +780,7 @@ def operacionCambioCuentas():
             return redirect(url_for('operacionCambioCuentas'))
             
         if "ProcesarOrden" in request.form:
+            print("Procesar Orden")
             codinterno = random.randint(10000, 99999)
             session["codinterno"] = codinterno
 
@@ -787,7 +788,7 @@ def operacionCambioCuentas():
             montoRecibir = session["montoRecibir"]
             monedaCambio = session["monedaCambio"]
             tipoCambio = session["dataTC"]
-
+            print("Tipo de Cambio = " , monedaCambio)
             if(monedaCambio == "Moneda: Dólares a Soles"):
                     monedaEnvio = ObtenerIdMoneda('USD')[0][0]
                     monedaRecibo = ObtenerIdMoneda('PEN')[0][0]
@@ -820,11 +821,11 @@ def operacionCambioCuentas():
 
             now = datetime.now()
             session["strHoraraInicio"] = str(now)
-
+            print("antes de insertar orden")
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO m_orden
-                VALUES('', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
             ( codinterno, nro_orden, '1', now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1' )) 
             mysql.connection.commit()   
