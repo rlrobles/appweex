@@ -24,20 +24,21 @@ def apiUpdateTipoCambioInvesting(payload):
     return response.json()
 
 def getTipoCambioInvesting(url):
-    tipoCambio = webscraping.getContentPage(url)
-    tipoCambio = tipoCambio.replace(",", ".")
-    print(tipoCambio)
-    return tipoCambio
+    tipoCambioCompra,tipoCambioVenta  = webscraping.getContentPage(url)
+    tipoCambioCompra = tipoCambioCompra.replace(",", ".")
+    tipoCambioVenta = tipoCambioVenta.replace(",", ".")
+
+    return tipoCambioCompra, tipoCambioVenta
 
 def jobUpdateTipoCambio():
     print("I'm working...")
     now = datetime.now()
     print(now)
-    valorTipoCambio = getTipoCambioInvesting('https://es.investing.com/currencies/usd-pen')
+    valorTipoCambioCompra, valorTipoCambioVenta = getTipoCambioInvesting('https://es.investing.com/currencies/usd-pen')
     data = {
         "id": 1,
-        "compra": valorTipoCambio,
-        "venta": valorTipoCambio
+        "compra": valorTipoCambioCompra,
+        "venta": valorTipoCambioVenta
     }
     print(data)
     response = apiUpdateTipoCambioInvesting(data)
