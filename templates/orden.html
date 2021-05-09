@@ -98,6 +98,10 @@
                         <div class="form-group">
                             <button class="btn btn-secondary">Ya transferí</button>
                             <button class="btn btn-primary">Ver mis órdenes</button>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary"  style="width: 100%;" data-toggle="modal" data-target="#exampleModalCenter">
+                                Ya transferí123
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -114,6 +118,40 @@
 
             </div>
         </div>
+
+        
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">ARTURO ALONSO , ELIGE COMO
+                    REPORTAR TU TRANSFERENCIA</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+            
+                    <div class="form-group">
+                        <label for="NumeroCuenta">Número de Operacion</label>
+                        <input type="text" name="NumeroOperacion"  value="" id="NumeroOperacion" tabindex="1" class="form-control" placeholder="Número de Operacion">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="NumeroDocumento">Adjuntar comprobante</label>
+                        <input type="file" name="ComprobanteOperacion"  value="" id="ComprobanteOperacion" tabindex="1" class="form-control" placeholder="Numero de documento">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" name="GuardarCuenta" value="Guardar_Cuenta" class="btn btn-primary">Guardar cuenta</button>
+                </div>
+            </div>
+            </div>
+        </div>
+
     </div>
 
         

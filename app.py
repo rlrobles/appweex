@@ -1,4 +1,3 @@
-## del modulo flask importa la clase Flask
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, make_response 
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
@@ -27,17 +26,8 @@ import time
 import webscraping
 from apscheduler.schedulers.background import BackgroundScheduler
 
-
-# def sensor():
-#     """ Function for test purposes. """
-#     print("Scheduler is alive!")
-
-# sched = BackgroundScheduler(daemon=True)
-# sched.add_job(sensor,'interval',minutes=1)
-# sched.start()
-
 app = Flask(__name__)
-#CORS(app)
+
 app = Flask(__name__,
             static_url_path='', 
             static_folder='static',
@@ -77,15 +67,6 @@ app.config["IMAGE_UPLOADS"] =  vardirf3
 
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["PNG", "JPG", "JPEG", "GIF"]
 app.config["MAX_IMAGE_FILESIZE"] = 500000 # 500 000 bytes
-
-""" def SetRouteFoolder(dir):
-    strDir = str(dir)
-    dirnew = strDir.replace("", "")
-    decode = codecs.escape_decode
-    newdir = decode(dir)
-    print(newdir)
-    return newdir """
-
 
 def allowed_image(filename):
     if not "." in filename:
@@ -150,7 +131,7 @@ def apiTipoCambioMonedas():
             }
         }
 
-    ##jobUpdateTipoCambio()
+    ##
     return jsonify(result)
 
 @app.route('/weex/tasa-cambio/v1/<moneda>', methods=['GET'])
@@ -180,36 +161,6 @@ def apiTipoCambioMonedashome(moneda):
             }
 
     return jsonify(result)
-
-def apiUpdateTipoCambioInvesting(payload):
-    #url = 'http://localhost:5000/weex/actualizar/tasa-cambio/v1'
-    url = 'http://demo.weex.pe/weex/actualizar/tasa-cambio/v1'
-    body = json.dumps(payload)
-    #print("body:", body)
-    header = {'content-type': 'application/json'}
-    response = requests.post(url, headers = header,  data = body)
-    print(response.status_code)
-    return response.json()
-
-def getTipoCambioInvesting(url):
-    tipoCambio = webscraping.getContentPage(url)
-    tipoCambio = tipoCambio.replace(",", ".")
-    print(tipoCambio)
-    return tipoCambio
-
-def jobUpdateTipoCambio():
-    print("I'm working...")
-    now = datetime.now()
-    print(now)
-    valorTipoCambio = getTipoCambioInvesting('https://es.investing.com/currencies/usd-pen')
-    data = {
-        "id": 1,
-        "compra": valorTipoCambio,
-        "venta": valorTipoCambio
-    }
-    print(data)
-    response = apiUpdateTipoCambioInvesting(data)
-    print(response)
 
 @app.route('/weex/actualizar/tasa-cambio/v1', methods=['POST'])
 def updateTipoCambioInvesting():
@@ -1007,25 +958,5 @@ def delete_contact(id):
     flash('Contact Removed Successfully')
     return redirect(url_for('Index'))
 
-def mainJob():
-    print('Starting Job')
-    schedule.every(1).minutes.do(jobUpdateTipoCambio)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-    print('Ending Job')
-
 if __name__ == '__main__':
    app.run(debug=True)
-   ##schedule.every(1).minutes.do(jobUpdateTipoCambio)
-   ##print("ffffffff")
-   ##while True:
-   ##     schedule.run_pending()
-   ##     time.sleep(1)
-
-   #scheduler = BackgroundScheduler()
-   #scheduler.add_job(func=jobUpdateTipoCambio, trigger="interval", seconds=60)
-   #scheduler.start()
-
-   # Shut down the scheduler when exiting the app
-   #jobUpdateTipoCambio.register(lambda: scheduler.shutdown())
