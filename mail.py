@@ -13,14 +13,14 @@ mail=Mail(app)
 #app.config['MAIL_SERVER']='smtp.gmail.com'
 #app.config['MAIL_PORT'] = 465
 
-app.config['MAIL_SERVER']='smtpout.secureserver.net'
-app.config['MAIL_PORT'] = 465
+app.config['MAIL_SERVER']= 'localhost' #'smtpout.secureserver.net'
+app.config['MAIL_PORT'] = 25 #465
 
 #app.config['MAIL_USERNAME'] = 'royerleandroroblesvega@gmail.com'
 #app.config['MAIL_PASSWORD'] = 'Synopsis2021.'
 
-app.config['MAIL_USERNAME'] = 'alonsoguzmanmurrugarra@gmail.com'
-app.config['MAIL_PASSWORD'] = 'alonso27*'
+app.config['MAIL_USERNAME'] = 'rlrobles@demo.weex.pe'
+app.config['MAIL_PASSWORD'] = 'DrXtASO?)BDx'
 
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True

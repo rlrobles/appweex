@@ -4,8 +4,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 
-sender_email_address = 'alonsoguzmanmurrugarra@gmail.com'
-sender_email_password = 'alonso27*'
+#sender_email_address = 'alonsoguzmanmurrugarra@gmail.com'
+#sender_email_password = 'alonso27*'
+
+sender_email_address = 'rlrobles@demo.weex.pe'
+sender_email_password = 'DrXtASO?)BDx'
+
 #receiver_email_address = 'royer.robles@outlook.com'
 receiver_email_address = ['royer.robles@outlook.com','mattewppe@hotmail.com','danielberrospicarmona@gmail.com']
 
@@ -36,7 +40,7 @@ msg.attach(part)
 
 email_body_content = msg.as_string()
 #server = smtplib.SMTP('smtp-mail.outlook.com:587')
-server = smtplib.SMTP('smtpout.secureserver.net:465')
+#server = smtplib.SMTP('smtpout.secureserver.net:465')
 server = smtplib.SMTP('localhost:25')
 server.starttls()
 server.login(sender_email_address, sender_email_password)
