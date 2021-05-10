@@ -847,7 +847,7 @@ def login():
 
 @app.route('/recover_account', methods=['GET','POST'])
 def recoverAccount():
-    url = "http://localhost:3000/reset_password/"
+    url = "http://demo.weex.pe/reset_password/"
     if request.method == 'POST':
         correo = request.form['correo']
         cur = mysql.connection.cursor()
@@ -869,7 +869,7 @@ def recoverAccount():
         print("params")
         print(params)
 
-        responseCorreo = correoweex.enviarCorreo(params)
+        responseCorreo = correoweex.enviarCorreo(params, html_content)
         print("respuesta correo")
         print(responseCorreo.status_code)
 

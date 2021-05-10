@@ -41,19 +41,23 @@ server.quit()
 print("EXITO")
 """
 
-def enviarCorreo(params):
+def enviarCorreo(params, contenido):
     print(params)
     print("ingreso fun")
-    #receiver_email_address = 'royer.robles@outlook.com' #Support Array
+    receiver_email_address = 'royerleandroroblesvega@gmail.com' #Support Array
     email_subject_line = 'Recuperacion de contraseña - Weex'
 
     msg = MIMEMultipart()
     msg['From'] = sender_email_address
-    msg['To'] = params['receiver_email_address']
+    msg['To'] = receiver_email_address #params['receiver_email_address']
     msg['Subject'] = email_subject_line
     msg['Cc'] = ''
 
-    email_body = params['html_content']
+    print("---------------------")
+    print(params['receiver_email_address'])
+    print(params['html_content'])
+
+    email_body = contenido #params['html_content']
     msg.attach(MIMEText(email_body, 'plain'))
 
     """
