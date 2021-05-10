@@ -7,6 +7,7 @@ from flask_mail import Mail, Message
 #https://stackoverflow.com/questions/23137012/535-5-7-8-username-and-password-not-accepted
 
 
+
 app =Flask(__name__)
 mail=Mail(app)
 
