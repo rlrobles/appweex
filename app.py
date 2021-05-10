@@ -871,7 +871,7 @@ def recoverAccount():
 
         responseCorreo = correoweex.enviarCorreo(params, html_content)
         print("respuesta correo")
-        print(responseCorreo.status_code)
+        print(responseCorreo['status_code'])
 
         """ message = Mail(
             from_email='alonsog@we-ex.pe',
