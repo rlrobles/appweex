@@ -41,10 +41,11 @@ server.quit()
 print("EXITO")
 """
 
-def enviarCorreo(params, contenido):
+def enviarCorreo(params, correo, contenido):
     print(params)
     print("ingreso fun")
-    receiver_email_address = 'royerleandroroblesvega@gmail.com' #Support Array
+    #receiver_email_address = 'royerleandroroblesvega@gmail.com' #Support Array
+    receiver_email_address = correo #Support Array
     email_subject_line = 'Recuperacion de contraseña - Weex'
 
     msg = MIMEMultipart()
