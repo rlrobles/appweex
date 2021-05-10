@@ -4,17 +4,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 
-<<<<<<< HEAD
 sender_email_address = 'rlrobles@demo.weex.pe'
 sender_email_password = 'DrXtASO?)BDx'
-=======
-#sender_email_address = 'alonsoguzmanmurrugarra@gmail.com'
-#sender_email_password = 'alonso27*'
-
-sender_email_address = 'rlrobles@demo.weex.pe'
-sender_email_password = 'DrXtASO?)BDx'
-
->>>>>>> d274460f202caeb21a2fa4246d3f29ba23a6bca6
 #receiver_email_address = 'royer.robles@outlook.com'
 receiver_email_address = ['royer.robles@outlook.com','mattewppe@hotmail.com','danielberrospicarmona@gmail.com']
 
