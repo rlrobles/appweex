@@ -866,6 +866,9 @@ def recoverAccount():
             "html_content": html_content
         }
 
+        print("params")
+        print(params)
+
         responseCorreo = correoweex.enviarCorreo(params)
         print("respuesta correo")
         print(responseCorreo.status_code)

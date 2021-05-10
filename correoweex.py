@@ -42,6 +42,7 @@ print("EXITO")
 """
 
 def enviarCorreo(params):
+    print(params)
     print("ingreso fun")
     #receiver_email_address = 'royer.robles@outlook.com' #Support Array
     email_subject_line = 'Recuperacion de contraseña - Weex'
