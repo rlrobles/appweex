@@ -326,16 +326,12 @@ def Home():
 
 @app.route('/inicio')
 def Inicio():
-    if "user" == "user":
-        session.permanent == True
-        #user = session["user"]
-        print("user ==================")
-        session['user111'] = 'dddddddddddddddddddddd'
-        session['username'] = session['user111']
-        #print(session['user111'])
-        return render_template('inicio.html')
-    else:
-        return render_template('inicio.html')
+    
+    session.permanent == True
+    idCliente = obtenerIdClienteUsuLogueado(session['user'])
+    session['idCli']=idCliente
+    
+    return render_template('inicio.html')
 
 @app.route('/logout')
 def logout():
@@ -347,8 +343,9 @@ def Cuenta():
 
     key = open("key.key", "rb").read()
     f = Fernet(key)
-
-    dataCuentasUsuario = TraerDataCuentas('1')
+    idCLiente= session['idCli']
+    print(idCLiente)
+    dataCuentasUsuario = TraerDataCuentas(str(idCLiente))
     listCuentasUsuario = list(dataCuentasUsuario)
 
     print(dataCuentasUsuario)
@@ -379,18 +376,42 @@ def Cuenta():
 def DatosPersonales():
     return render_template('datos-personales.html')
 
-
-def listarOrdenesByIdCliente(idCliente = 1):
-    cur = mysql.connection.cursor() 
-    #cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = '" + idCliente + "'")
-    cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = 1")
+def listarOrdenesByIdCliente(idCliente):
+    id= str(idCliente)
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = '" +id  + "'")
+															
     data = cur.fetchall()
     cur.close()
     return data
 
+def obtenerNombreUserLogueado(correo):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("SELECT NOMBRE FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "'")
+    data = cur.fetchall()
+    nombreUsuarioLogueado = data
+    print("Obteniendo Id de cliente logueado")
+    prin(nombreUsuarioLogueado)
+    cur.close()
+    return nombreUsuarioLogueado
+
+def obtenerIdClienteUsuLogueado(correo):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("SELECT ID FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "'")
+    data = cur.fetchmany(1)
+    idCliente = data[0][0]
+    print("Obteniendo Id de cliente logueado")
+    print (idCliente)
+    cur.close()
+    return idCliente
 @app.route('/ordenes')
 def Ordenes():
-    listOrdenes = listarOrdenesByIdCliente(1)
+    session.permanent == True
+    print("Listar orden")
+    print(session['user'])		   
+    listOrdenes = listarOrdenesByIdCliente(session['idCli'])
     return render_template('ordenes.html', data = listOrdenes)
 
 @app.route('/')
@@ -710,6 +731,9 @@ def operacionProcesarOrden():
 
 @app.route("/operacion-cambio/cuentas", methods=['GET','POST'])
 def operacionCambioCuentas():
+    session.permanent == True
+    idCliente = session['idCli']
+
     if request.method == 'POST':
         if "GuardarCuenta" in request.form:
             key = open("key.key", "rb").read()
@@ -733,7 +757,7 @@ def operacionCambioCuentas():
                 INSERT INTO m_cuenta
                 VALUES('', %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
-            ( '1', Banco, '0', '1', NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
+            ( idCliente, Banco, '0', '1', NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
             mysql.connection.commit()     
 
             return redirect(url_for('operacionCambioCuentas'))
@@ -786,7 +810,7 @@ def operacionCambioCuentas():
                 INSERT INTO m_orden
                 VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
-            ( codinterno, nro_orden, '1', now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1' )) 
+            ( codinterno, nro_orden, idCliente, now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1' )) 
             mysql.connection.commit()   
              
 
@@ -807,7 +831,7 @@ def operacionCambioCuentas():
         dataTipDoc = TraerDataTipDoc()
         session["dataTipDoc"] = dataTipDoc 
 
-        dataCuentasUsuario = TraerDataCuentas('1')
+        dataCuentasUsuario = TraerDataCuentas(str(idCliente))
         session["dataCuentasUsuario"] = dataCuentasUsuario
 
         """     print(len(dataBancoDeDondeEnvias))
@@ -816,7 +840,7 @@ def operacionCambioCuentas():
         print(len(dataCuentasUsuario))
         print(dataCuentasUsuario) """
 
-        dataCuentasUsuario = TraerDataCuentas('1')
+        dataCuentasUsuario = TraerDataCuentas(str(idCliente))
         listCuentasUsuario = list(dataCuentasUsuario)
 
         """ print(dataCuentasUsuario)
@@ -941,7 +965,8 @@ def loginValidate():
                 print('Inicio sesion correcto')
                 #EsCorrectoPasswordHash(user,password)   
                 #return render_template("index.html")
-                session['user111'] = 'ddfdddddf'
+                session['user'] = user
+                print(user)	   
                 return redirect(url_for('Inicio'))
             else:
                 print('password incorrecto')
