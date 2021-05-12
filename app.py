@@ -330,8 +330,9 @@ def Inicio():
     session.permanent == True
     idCliente = obtenerIdClienteUsuLogueado(session['user'])
     session['idCli']=idCliente
+    name = obtenerNombreUserLogueado(session['user'])
     
-    return render_template('inicio.html')
+    return render_template('inicio.html', nameUser = name)
 
 @app.route('/logout')
 def logout():
@@ -340,16 +341,14 @@ def logout():
 
 @app.route('/cuenta')
 def Cuenta():
+    session.permanent == True
 
     key = open("key.key", "rb").read()
     f = Fernet(key)
     idCLiente= session['idCli']
-    print(idCLiente)
+    
     dataCuentasUsuario = TraerDataCuentas(str(idCLiente))
     listCuentasUsuario = list(dataCuentasUsuario)
-
-    print(dataCuentasUsuario)
-    print(listCuentasUsuario)
 
     numeroRegistros = len(listCuentasUsuario)
 
@@ -363,14 +362,11 @@ def Cuenta():
         an_item = dict(banco= tupleAux[1], cuenta= f.decrypt(tupleAux[2]).decode('utf-8') , titular=f.decrypt(tupleAux[3]).decode('utf-8'), moneda=tupleAux[4])
         items.append(an_item)
    
-    
     session["items"] = items
 
     print(items)
 
-
     return render_template('cuenta.html')
-
 
 @app.route('/datos-personales')
 def DatosPersonales():
@@ -390,9 +386,9 @@ def obtenerNombreUserLogueado(correo):
     
     cur.execute("SELECT NOMBRE FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "'")
     data = cur.fetchall()
-    nombreUsuarioLogueado = data
-    print("Obteniendo Id de cliente logueado")
-    prin(nombreUsuarioLogueado)
+    nombreUsuarioLogueado = data[0][0]
+
+    print(nombreUsuarioLogueado)
     cur.close()
     return nombreUsuarioLogueado
 
@@ -406,6 +402,7 @@ def obtenerIdClienteUsuLogueado(correo):
     print (idCliente)
     cur.close()
     return idCliente
+
 @app.route('/ordenes')
 def Ordenes():
     session.permanent == True
