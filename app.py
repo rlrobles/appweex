@@ -331,7 +331,7 @@ def Inicio():
     idCliente = obtenerIdClienteUsuLogueado(session['user'])
     session['idCli']=idCliente
     name = obtenerNombreUserLogueado(session['user'])
-    
+    session['nameUser'] = name
     return render_template('inicio.html', nameUser = name)
 
 @app.route('/logout')
@@ -409,7 +409,7 @@ def Ordenes():
     print("Listar orden")
     print(session['user'])		   
     listOrdenes = listarOrdenesByIdCliente(session['idCli'])
-    return render_template('ordenes.html', data = listOrdenes)
+    return render_template('ordenes.html', data = listOrdenes, nameUser = session['nameUser'] )
 
 @app.route('/')
 def Redirect():
@@ -730,7 +730,6 @@ def operacionProcesarOrden():
 def operacionCambioCuentas():
     session.permanent == True
     idCliente = session['idCli']
-
     if request.method == 'POST':
         if "GuardarCuenta" in request.form:
             key = open("key.key", "rb").read()
@@ -809,10 +808,9 @@ def operacionCambioCuentas():
                 """, 
             ( codinterno, nro_orden, idCliente, now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1' )) 
             mysql.connection.commit()   
-             
 
             return redirect(url_for('operacionValidarOrden', codinterno = codinterno))
-
+            
     elif request.method == 'GET':
 
         key = open("key.key", "rb").read()
