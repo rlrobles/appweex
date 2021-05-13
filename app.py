@@ -384,7 +384,7 @@ def DatosPersonales():
 def listarOrdenesByIdCliente(idCliente):
     id= str(idCliente)
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = '" +id  + "'")
+    cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = '" +id  + "' ORDER BY FECHAHORACREACION DESC")
 															
     data = cur.fetchall()
     cur.close()
@@ -710,10 +710,20 @@ def operacionActualizarNumeroOperacion():
     if request.method == 'POST':
         print("POST")
         if "GuardarOperacion" in request.form:
+            codIn= session["codinterno"]
             print("Actualizar con tipo operacion")
             NumeroOperacion = request.form['NumeroOperacion']
-            print(NumeroOperacion)
-            return redirect(url_for('operacionCambioCuentas'))
+            #ComprobanteOperacion = request.form['ComprobanteOperacion']
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                UPDATE m_orden
+                SET CODORDEN = %s
+                WHERE CODINTERNO = %s
+                """, 
+                ( NumeroOperacion, codIn )) 
+            mysql.connection.commit()
+
+            return redirect(url_for('Ordenes'))
     else:
         return redirect(url_for('operacionCambioCuentas'))
 
