@@ -696,7 +696,12 @@ def operacionCambio():
 
 @app.route("/operacion/validar/<codinterno>", methods=['GET','POST'])
 def operacionValidarOrden(codinterno):
-    return render_template("orden.html")
+    
+    if "GuardarOperacion" in request.form:
+        print("Inicio ")
+        return render_template("orden.html")
+    else:
+        return render_template("orden.html")
 
 @app.route("/procesar-orden", methods=['GET','POST'])
 def operacionProcesarOrden():
@@ -751,7 +756,7 @@ def operacionCambioCuentas():
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO m_cuenta
-                VALUES('', %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
             ( idCliente, Banco, '0', '1', NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
             mysql.connection.commit()     
