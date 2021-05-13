@@ -331,7 +331,7 @@ def Home():
     return render_template('home.html', dataTC = dataTipoCambio)
 
 @app.route('/inicio')
-@login_required
+#@login_required
 def Inicio():
     
     session.permanent == True
@@ -347,7 +347,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/cuenta')
-@login_required
+#@login_required
 def Cuenta():
     session.permanent == True
 
@@ -377,7 +377,7 @@ def Cuenta():
     return render_template('cuenta.html')
 
 @app.route('/datos-personales')
-@login_required
+#@login_required
 def DatosPersonales():
     return render_template('datos-personales.html')
 
@@ -413,7 +413,7 @@ def obtenerIdClienteUsuLogueado(correo):
     return idCliente
 
 @app.route('/ordenes')
-@login_required
+#@login_required
 def Ordenes():
     session.permanent == True
     print("Listar orden")
@@ -688,7 +688,7 @@ def operacionCambioPost():
 
 
 @app.route("/operacion-cambio" , methods=['GET','POST'])
-@login_required
+#@login_required
 def operacionCambio():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
     session["dataTC"] = dataTipoCambio   
@@ -705,18 +705,25 @@ def operacionCambio():
         return render_template("operacion-cambio.html", dataTC = dataTipoCambio,  )
 
 
-@app.route("/operacion/validar/<codinterno>", methods=['GET','POST'])
-@login_required
-def operacionValidarOrden(codinterno):
-    
-    if "GuardarOperacion" in request.form:
-        print("Inicio ")
-        return render_template("orden.html")
+@app.route("/actualizar/numero/operacion", methods=['GET','POST'])
+def operacionActualizarNumeroOperacion():
+    if request.method == 'POST':
+        print("POST")
+        if "GuardarOperacion" in request.form:
+            print("Actualizar con tipo operacion")
+            NumeroOperacion = request.form['NumeroOperacion']
+            print(NumeroOperacion)
+            return redirect(url_for('operacionCambioCuentas'))
     else:
-        return render_template("orden.html")
+        return redirect(url_for('operacionCambioCuentas'))
+
+@app.route("/operacion/validar/<codinterno>", methods=['GET','POST'])
+#@login_required
+def operacionValidarOrden(codinterno):
+    return render_template("orden.html")
 
 @app.route("/procesar-orden", methods=['GET','POST'])
-@login_required
+#@login_required
 def operacionProcesarOrden():
     if request.method == 'POST' and request.form['procesar_orden'] == 'Procesar':
         montoEnviar = session["montoEnviar"]
@@ -745,7 +752,7 @@ def operacionProcesarOrden():
 
 
 @app.route("/operacion-cambio/cuentas", methods=['GET','POST'])
-@login_required
+#@login_required
 def operacionCambioCuentas():
     session.permanent == True
     idCliente = session['idCli']
@@ -884,7 +891,7 @@ def login():
 
 
 @app.route('/recover_account', methods=['GET','POST'])
-@login_required
+#@login_required
 def recoverAccount():
     url = "http://demo.weex.pe/reset_password/"
     if request.method == 'POST':
