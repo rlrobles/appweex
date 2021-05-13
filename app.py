@@ -26,6 +26,7 @@ import schedule
 import time
 import webscraping
 from apscheduler.schedulers.background import BackgroundScheduler
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 app = Flask(__name__)
 
@@ -33,6 +34,11 @@ app = Flask(__name__,
             static_url_path='', 
             static_folder='static',
             template_folder='templates')
+
+# flask-login
+login_manager = LoginManager()
+login_manager.init_app(app)
+#login_manager.login_view = "login"
 
 ## Mail
 #mail = Mail(app)
@@ -325,6 +331,7 @@ def Home():
     return render_template('home.html', dataTC = dataTipoCambio)
 
 @app.route('/inicio')
+@login_required
 def Inicio():
     
     session.permanent == True
@@ -340,6 +347,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/cuenta')
+@login_required
 def Cuenta():
     session.permanent == True
 
@@ -369,6 +377,7 @@ def Cuenta():
     return render_template('cuenta.html')
 
 @app.route('/datos-personales')
+@login_required
 def DatosPersonales():
     return render_template('datos-personales.html')
 
@@ -404,6 +413,7 @@ def obtenerIdClienteUsuLogueado(correo):
     return idCliente
 
 @app.route('/ordenes')
+@login_required
 def Ordenes():
     session.permanent == True
     print("Listar orden")
@@ -678,6 +688,7 @@ def operacionCambioPost():
 
 
 @app.route("/operacion-cambio" , methods=['GET','POST'])
+@login_required
 def operacionCambio():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
     session["dataTC"] = dataTipoCambio   
@@ -695,10 +706,12 @@ def operacionCambio():
 
 
 @app.route("/operacion/validar/<codinterno>", methods=['GET','POST'])
+@login_required
 def operacionValidarOrden(codinterno):
     return render_template("orden.html")
 
 @app.route("/procesar-orden", methods=['GET','POST'])
+@login_required
 def operacionProcesarOrden():
     if request.method == 'POST' and request.form['procesar_orden'] == 'Procesar':
         montoEnviar = session["montoEnviar"]
@@ -727,6 +740,7 @@ def operacionProcesarOrden():
 
 
 @app.route("/operacion-cambio/cuentas", methods=['GET','POST'])
+@login_required
 def operacionCambioCuentas():
     session.permanent == True
     idCliente = session['idCli']
@@ -867,6 +881,7 @@ def login():
 
 
 @app.route('/recover_account', methods=['GET','POST'])
+@login_required
 def recoverAccount():
     url = "http://demo.weex.pe/reset_password/"
     if request.method == 'POST':
@@ -917,7 +932,8 @@ def recoverAccount():
 
 
         #return render_template('edit-contact.html', user = data[0]) 
-        return 'envio de email'
+        #return 'envio de email'
+        return redirect(url_for('Redirect'))
 
         #return render_template("reset-password.html")
 
@@ -1003,6 +1019,81 @@ def delete_contact(id):
     mysql.connection.commit()
     flash('Contact Removed Successfully')
     return redirect(url_for('Index'))
+
+def reverse_decorator(function):
+    print('Inside reverse_decorator function')
+    def reverse_wrapper():
+        print('Inside reverse_wrapper function')
+
+        """ if "user" in session:
+            user = session["user"]
+            return f"<h1>{user}</h1>" """
+
+        session.permanent == True
+        print("Listar orden")
+        print(session['user'])	
+
+        return 'Return reverse_wrapper function'
+    return reverse_wrapper
+
+@app.route('/test/acceso')
+@reverse_decorator
+def accesoTest():
+    
+    return "fff"
+
+# @login_manager.user_loader
+# def load_user(username):
+#     return User.query.filter_by(username = username).first()
+
+
+# @login_manager.unauthorized_handler
+# def unauthorized():
+#     return redirect(url_for("login"))
+
+# @login_manager.unauthorized_handler
+# def unauthorized():
+#     return redirect(url_for('Redirect'))
+
+
+# class User(db.Document):
+#     name = db.StringField()
+#     password = db.StringField()
+#     email = db.StringField()
+#     def to_json(self):
+#         return {"name": self.name,
+#                 "email": self.email}
+#     def is_authenticated(self):
+#         return True
+#     def is_active(self):
+#         return True
+#     def is_anonymous(self):
+#         return False
+#     def get_id(self):
+#         return str(self.id)
+
+
+# class User(UserMixin):
+#   def __init__(self,id):
+#     self.id = id
+
+@login_manager.user_loader
+def user_loader():
+    # session.permanent == True
+    # #session['user'] = user
+    # if 'user' in session:
+    #   username = session['user']
+    # else:
+    #     session['user'] = True 
+
+    # print(session['user'])
+
+    """Given *user_id*, return the associated User object.
+
+    :param unicode user_id: user_id (email) user to retrieve
+
+    """
+    return User.query.get(user_id)
 
 if __name__ == '__main__':
    app.run(debug=True)
