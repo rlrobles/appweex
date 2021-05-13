@@ -338,7 +338,7 @@ def Inicio():
     idCliente = obtenerIdClienteUsuLogueado(session['user'])
     session['idCli']=idCliente
     name = obtenerNombreUserLogueado(session['user'])
-    
+    session['nameUser'] = name
     return render_template('inicio.html', nameUser = name)
 
 @app.route('/logout')
@@ -419,7 +419,7 @@ def Ordenes():
     print("Listar orden")
     print(session['user'])		   
     listOrdenes = listarOrdenesByIdCliente(session['idCli'])
-    return render_template('ordenes.html', data = listOrdenes)
+    return render_template('ordenes.html', data = listOrdenes, nameUser = session['nameUser'] )
 
 @app.route('/')
 def Redirect():
@@ -708,7 +708,12 @@ def operacionCambio():
 @app.route("/operacion/validar/<codinterno>", methods=['GET','POST'])
 @login_required
 def operacionValidarOrden(codinterno):
-    return render_template("orden.html")
+    
+    if "GuardarOperacion" in request.form:
+        print("Inicio ")
+        return render_template("orden.html")
+    else:
+        return render_template("orden.html")
 
 @app.route("/procesar-orden", methods=['GET','POST'])
 @login_required
@@ -744,7 +749,6 @@ def operacionProcesarOrden():
 def operacionCambioCuentas():
     session.permanent == True
     idCliente = session['idCli']
-
     if request.method == 'POST':
         if "GuardarCuenta" in request.form:
             key = open("key.key", "rb").read()
@@ -766,7 +770,7 @@ def operacionCambioCuentas():
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO m_cuenta
-                VALUES('', %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
             ( idCliente, Banco, '0', '1', NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
             mysql.connection.commit()     
@@ -823,10 +827,9 @@ def operacionCambioCuentas():
                 """, 
             ( codinterno, nro_orden, idCliente, now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1' )) 
             mysql.connection.commit()   
-             
 
             return redirect(url_for('operacionValidarOrden', codinterno = codinterno))
-
+            
     elif request.method == 'GET':
 
         key = open("key.key", "rb").read()
