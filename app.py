@@ -323,8 +323,34 @@ def MailClass():
         print("exception")
     return "envio de mail"
 
+
+def validateLoginRequired():
+    url = request.url
+    print(url)
+    session.permanent == True
+    print("dddsssssdd")
+
+    print(request.path)
+
+    if 'user' in session and request.path == '/login':
+        username = session['user']
+        print("logueado y redireccionar")
+        print("logueado y redireccionar23")
+        #return render_template('inicio.html', nameUser = 'name')
+        return redirect(url_for('Cuenta'))
+        """ if request.path == '/login':
+            print('ggggggggggggg')
+            return redirect(url_for('Inicio')) """
+        print("logueado y redireccionar")
+
+    else:
+        print("no logueado")
+        return redirect(url_for('login'))
+
+
 @app.route('/home')
 def Home():
+    #validateLoginRequired()
     #print(str(uuid.uuid4()))
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
     #print(dataTipoCambio)
@@ -333,7 +359,7 @@ def Home():
 @app.route('/inicio')
 #@login_required
 def Inicio():
-    
+    #validateLoginRequired()
     session.permanent == True
     idCliente = obtenerIdClienteUsuLogueado(session['user'])
     session['idCli']=idCliente
@@ -897,6 +923,10 @@ def operacionCambioCuentas():
 
 @app.route('/login', methods=['GET','POST'])
 def login():
+    #validateLoginRequired()
+    if 'user' in session and request.path == '/login':
+        print('redirect')
+        return redirect(url_for('Cuenta'))
     return render_template("login.html")
 
 
