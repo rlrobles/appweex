@@ -22,37 +22,37 @@
         <form action="/add_client" method = "POST" >
             <div class="form-group">
                 <label>Nombre:</label>
-                <input type="text" name="Nombre" id="Nombre" placeholder="Nombre" class="form-group" style="width:100%">
+                <input type="text" name="Nombre" id="Nombre" onkeypress="return sololetras(event)" placeholder="Nombre" class="form-group" style="width:100%" required>
             </div>
             
             <div class="form-group">
                 <label>Apellido Paterno:</label>
-                <input type="text" name="ApellidoPaterno" id="ApellidoPaterno" placeholder="Apellido Paterno" class="form-group" style="width:100%">
+                <input type="text" name="ApellidoPaterno" id="ApellidoPaterno" onkeypress="return sololetras(event)" placeholder="Apellido Paterno" class="form-group" style="width:100%" required>
             </div>
 
             <div class="form-group">
                 <label>Apellido Materno:</label>
-                <input type="text" name="ApellidoMaterno" id="ApellidoMaterno" placeholder="Apellido Materno" class="form-group" style="width:100%">
+                <input type="text" name="ApellidoMaterno" id="ApellidoMaterno" onkeypress="return sololetras(event)" placeholder="Apellido Materno" class="form-group" style="width:100%" required>
             </div>
 
             <div class="form-group">
                 <label>Correo Electrónico:</label>
-                <input type="text" name="CorreoElectronico" id="CorreoElectronico" placeholder="Correo Electronico" class="form-group" style="width:100%">
+                <input type="email" name="CorreoElectronico" id="CorreoElectronico" placeholder="Correo Electronico" class="form-group" style="width:100%" required>
             </div>
 
             <div class="form-group">
                 <label>Celular:</label>
-                <input type="text" name="Celular" id="Celular" placeholder="Celular" class="form-group" style="width:100%">
+                <input type="text" name="Celular" id="Celular" onkeypress="return soloNumeros(event)" placeholder="Celular" class="form-group" style="width:100%" required>
             </div>
 
             <div class="form-group">
                 <label>Password:</label>
-                <input type="password" name="Password" id="Password" placeholder="Pasword" class="form-group" style="width:100%">
+                <input type="password" name="Password" id="Password" placeholder="Pasword" class="form-group" style="width:100%" required>
             </div>
 
             <div class="form-group">
                 <label>Tipo de Documento:</label>
-                <select name="TipoDocumento" class="form-group" style="width: 100%;" id = "TipoDocumento">
+                <select name="TipoDocumento" class="form-group" style="width: 100%;" id = "TipoDocumento" required>
                     <option value="" selected="selected" disabled selected>Tipo de documento</option>
                     {% for documento in tipo_documentos %}
                     <option value="{{ documento.0 }}">{{ documento.1 }}</option>
@@ -62,17 +62,17 @@
 
             <div class="form-group">
                 <label>Numero de documento:</label>
-                <input type="text" name="NumeroDocumento" id="NumeroDocumento" placeholder="Numeo de documento" class="form-group" style="width:100%">
+                <input type="text" name="NumeroDocumento" id="NumeroDocumento" onkeypress="return soloNumeros(event)" placeholder="Numeo de documento" class="form-group" style="width:100%" required>
             </div>
 
             <div class="form-group">
                 <label>Fecha de emisión del documento</label>
-                <input type="date" name="FechaEmisionDocumento" id="FechaEmisionDocumento" placeholder="Fecha de emisión" class="form-group" style="width:100%">
+                <input type="date" name="FechaEmisionDocumento" id="FechaEmisionDocumento" placeholder="Fecha de emisión" class="form-group" style="width:100%" required>
             </div>
 
             <div class="form-group">
                 <label>¿Es usted una persona políticamente expuesta?</label>
-                <select name="PersonaPolitica" class="form-group" style="width: 100%;" id="PersonaPolitica">
+                <select name="PersonaPolitica" class="form-group" style="width: 100%;" id="PersonaPolitica" required>
                     <option value="" disabled selected>Opciones</option>
                     <option value="0">NO</option>
                     <option value="1">SI</option>
@@ -81,7 +81,7 @@
 
             <div class="form-group">
                 <label>Tipo de Persona:</label>
-                <select name="TipoPersona" class="form-group" style="width: 100%;" id="TipoPersona">
+                <select name="TipoPersona" class="form-group" style="width: 100%;" id="TipoPersona" required>
                     <option value="" disabled selected>Tipo de persona</option>
                     {% for persona in tipo_persona %}
                     <option value="{{ persona.0 }}">{{ persona.1 }}</option>
@@ -91,7 +91,7 @@
 
             <div class="form-group">
                 <label>Ocupación:</label>
-                <input type="text" name="Ocupacion" id="Ocupacion" placeholder="Ocupacion" class="form-group" style="width:100%">
+                <input type="text" name="Ocupacion" id="Ocupacion" onkeypress="return sololetras(event)" placeholder="Ocupacion" class="form-group" style="width:100%" required>
             </div>
 
 
@@ -149,6 +149,52 @@
 
     function filenamesizeFotoDocB(elem){
         documento.cookie = `filesizeFotoDocB=${elem.files[0].size}`;
+    }
+
+    function sololetras(e) {
+        key=e.keyCode || e.which;
+ 
+        teclado=String.fromCharCode(key).toLowerCase();
+ 
+        letras="qwertyuiopasdfghjklñzxcvbnm ";
+ 
+        especiales="8-37-38-46-164";
+ 
+        teclado_especial=false;
+ 
+        for(var i in especiales){
+            if(key==especiales[i]){
+                teclado_especial=true;
+                break;
+            }
+        }
+ 
+        if(letras.indexOf(teclado)==-1 && !teclado_especial){
+            return false;
+        }
+    }
+
+    function soloNumeros(e) {
+        key=e.keyCode || e.which;
+ 
+        teclado=String.fromCharCode(key).toLowerCase();
+ 
+        numeros="0123456789 ";
+ 
+        especiales="8-37-38-46-164";
+ 
+        teclado_especial=false;
+ 
+        for(var i in especiales){
+            if(key==especiales[i]){
+                teclado_especial=true;
+                break;
+            }
+        }
+ 
+        if(numeros.indexOf(teclado)==-1 && !teclado_especial){
+            return false;
+        }
     }
 </script>
 

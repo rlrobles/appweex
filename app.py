@@ -197,7 +197,7 @@ def updateTipoCambioInvesting():
 
 def TraerDataBancoDeDondeEnvias():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM de_banco WHERE NOMBRE IN ('BCP','INTERBANK')")
+    cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM de_banco")
     data = cur.fetchall()
     dataBanco = data
     cur.close()

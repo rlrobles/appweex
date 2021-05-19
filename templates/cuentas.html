@@ -48,7 +48,7 @@
                             <h2>Elige el banco de donde envías tu dinero:</h2>
                             <div class="form-group">
                                 <label>Banco:</label>
-                                <select name="BancoEnvio" class="form-control" style="width: 100%;" id="BancoEnvio">
+                                <select name="BancoEnvio" class="form-control" style="width: 100%;" id="BancoEnvio" required>
                                     <option value="" disabled selected>Banco</option>
                                         {% for banco in session["dataBanco1"] %}
                                         <option value="{{ banco.0 }}">{{ banco.1 }}</option>
@@ -62,7 +62,7 @@
                             
                             <div class="form-group">
                                 <label>Cuentas:</label>
-                                <select name="CuentaRecibo" class="form-control" style="width: 100%;" id="CuentaRecibo">
+                                <select name="CuentaRecibo" class="form-control" style="width: 100%;" id="CuentaRecibo" required>
                                     <option value="" disabled selected>Cuentas</option>
                                     {% for item in session["items"] %}
                                     <option value="{{ item.id }}">{{ item.cuenta }}</option>
@@ -90,7 +90,7 @@
                                         <div class="modal-body">
                                             <div class="form-group">
                                                 <label>Banco:</label>
-                                                <select name="Banco" class="form-control" style="width: 100%;" id="Banco">
+                                                <select name="Banco" class="form-control" style="width: 100%;" id="Banco" >
                                                     <option value="" disabled selected>Banco</option>
                                                         {% for banco in session["dataBanco2"] %}
                                                         <option value="{{ banco.0 }}">{{ banco.1 }}</option>
