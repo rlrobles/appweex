@@ -77,64 +77,7 @@
                             
 
                             
-                                <!-- Modal -->
-                                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLongTitle">Agregar nueva cuenta</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="form-group">
-                                                <label>Banco:</label>
-                                                <select name="Banco" class="form-control" style="width: 100%;" id="Banco" >
-                                                    <option value="" disabled selected>Banco</option>
-                                                        {% for banco in session["dataBanco2"] %}
-                                                        <option value="{{ banco.0 }}">{{ banco.1 }}</option>
-                                                        {% endfor %}
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="NumeroCuenta">Numero de la cuenta:</label>
-                                                <input type="text" name="NumeroCuenta"  value="" id="NumeroCuenta" tabindex="1" class="form-control" placeholder="Número de la cuenta">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="NombreTitular">Nombre del Titular:</label>
-                                                <input type="text" name="NombreTitular"  value="" id="NombreTitular" tabindex="1" class="form-control" placeholder="Nombe del Titular">
-                                            </div>
-
-                                        <!--  <div class="form-group">
-                                                <input type="submit" style="width: 100%;" onclick="return false;" class="btn btn-primary" name="upvote" value="upvote" />
-                                            </div> -->
-
-                                            <div class="form-group">
-                                                <label>Tipo de Documento:</label>
-                                                <select name="TipoDocumento" class="form-control" style="width: 100%;" id="TipoDocumento">
-                                                    <option value="" disabled selected>Tipo de documento</option>
-                                                        {% for tipdoc in session["dataTipDoc"] %}
-                                                        <option value="{{ tipdoc.0 }}">{{ tipdoc.1 }}</option>
-                                                        {% endfor %}
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label for="NumeroDocumento">Numero del documento:</label>
-                                                <input type="text" name="NumeroDocumento"  value="" id="NumeroDocumento" tabindex="1" class="form-control" placeholder="Numero de documento">
-                                            </div>
-
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="submit" name="GuardarCuenta" value="Guardar_Cuenta" class="btn btn-primary">Guardar cuenta</button>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
+                               
                             
                         </div>
                     </div>
@@ -149,6 +92,68 @@
                         </div>
                     </div>
                 </form>
+
+
+                <form action="/operacion-cambio/cuentas" method = "POST" enctype="multipart/form-data">
+                 <!-- Modal -->
+                 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Agregar nueva cuenta</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Banco:</label>
+                                <select name="Banco" class="form-control" style="width: 100%;" id="Banco" required>
+                                    <option value="" disabled selected>Banco</option>
+                                        {% for banco in session["dataBanco2"] %}
+                                        <option value="{{ banco.0 }}">{{ banco.1 }}</option>
+                                        {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="NumeroCuenta">Numero de la cuenta:</label>
+                                <input type="text" name="NumeroCuenta"  value="" id="NumeroCuenta" tabindex="1" class="form-control" placeholder="Número de la cuenta">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="NombreTitular">Nombre del Titular:</label>
+                                <input type="text" name="NombreTitular"  value="" id="NombreTitular" tabindex="1" class="form-control" placeholder="Nombe del Titular">
+                            </div>
+
+                        <!--  <div class="form-group">
+                                <input type="submit" style="width: 100%;" onclick="return false;" class="btn btn-primary" name="upvote" value="upvote" />
+                            </div> -->
+
+                            <div class="form-group">
+                                <label>Tipo de Documento:</label>
+                                <select name="TipoDocumento" class="form-control" style="width: 100%;" id="TipoDocumento">
+                                    <option value="" disabled selected>Tipo de documento</option>
+                                        {% for tipdoc in session["dataTipDoc"] %}
+                                        <option value="{{ tipdoc.0 }}">{{ tipdoc.1 }}</option>
+                                        {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="NumeroDocumento">Numero del documento:</label>
+                                <input type="text" name="NumeroDocumento"  value="" id="NumeroDocumento" tabindex="1" class="form-control" placeholder="Numero de documento">
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" name="GuardarCuenta" value="Guardar_Cuenta" class="btn btn-primary">Guardar cuenta</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </form>
 
                 <div class="row">
                     <p></p>
