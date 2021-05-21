@@ -13,41 +13,37 @@
 
     
     <tr>
-        <th>ID</th>
-        <th>CODINTERNO</th>
-        <th>CODORDEN</th>
-
-        <th>IDCLIENTE</th>
-        <th>FECHAHORACREACION</th>
-        <th>MTOENVIO</th>
-
-        <th>MONEDAENVIO</th>
-        <th>IDBANCOENVIO</th>
-        <th>MTORECIBO</th>
-
-        <th>MONEDARECIBO</th>
-        <th>IDCUENTARECIBO</th>
-        <th>MTOTIPOCAMBIO</th>
-        
-        <th>ESTADO</th>
+        <!-- <th>ID</th>
+        <th>CODINTERNO</th> -->
+        <th>NUMERO DE ORDEN</th>
+        <!-- <th>IDCLIENTE</th>
+        <th>FECHAHORACREACION</th> -->
+        <th>MONTO ENVIO</th>
+        <th>MONEDA</th>
+        <!-- <th>IDBANCOENVIO</th> -->
+        <th>MONTO RECIBIDO</th>
+        <th>MONEDA MONTO RECIBIDO</th>
+        <!-- <th>IDCUENTARECIBO</th>
+        <th>MTOTIPOCAMBIO</th> -->        
+        <!-- <th>ESTADO</th> -->
 
       </tr>
     </thead>
     {% for row in data %}
        <tr>
-          <td> {{ row[0] }} </td>
-          <td> {{ row[1] }} </td>
+          <!-- <td> {{ row[0] }} </td>
+          <td> {{ row[1] }} </td> -->
           <td> {{ row[2] }} </td>
-          <td> {{ row[3] }} </td>
-          <td> {{ row[4] }} </td>
+          <!-- <td> {{ row[3] }} </td>
+          <td> {{ row[4] }} </td> -->
           <td> {{ row[5] }} </td>
-          <td> {{ row[6] }} </td>
-          <td> {{ row[7] }} </td>
+          <!-- <td> {{ row[6] }} </td>-->
+          <td> {{ row[13] }} </td><!-- <td> {{ row[7] }} </td>  -->
           <td> {{ row[8] }} </td>
-          <td> {{ row[9] }} </td>
-          <td> {{ row[10] }} </td>
+          <td> {{ row[14] }} </td><!-- <td> {{ row[9] }} </td> -->
+          <!--<td> {{ row[10] }} </td>
           <td> {{ row[11] }} </td>
-          <td> {{ row[12] }} </td>
+          <td> {{ row[12] }} </td> -->
        </tr>
     {% endfor %}
  </table>

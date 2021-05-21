@@ -11,7 +11,7 @@
     <div class="col-md-12" style="margin-bottom: 1em;">
         <!-- <img style="display:block;margin:auto;" src="../static/img/home/exchange_money_home.jpg" alt=""> -->
         <!-- <img style="display:block;margin:auto;" src="https://dummyimage.com/300x200/2a98c4/fff" alt="" > -->
-        <h2 align="center">Operación cambio de dolares a soles</h2>
+        <h2 align="center">Operación de cambio </h2>
         <!-- <h5>Tipo de cambio del dólar hoy en Perú</h5> -->
 
 
@@ -31,7 +31,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-lg-12">
-                        <form id="operacion-tc-form" action="/operacion-cambio-post" method="POST" role="form" style="display: block;">
+                        <form id="operacion-tc-form" action="/operacion-cambio-post" method="POST" role="form" style="display: block;"  onsubmit="return validateForm()">
 
                             <div class="form-group">
                                 <label for="montoEnviar">Envias:</label>
@@ -145,6 +145,18 @@
 {% block script %}
 
 <script>
+
+    function validateForm() {
+        //var x = document.forms["myForm"]["fname"].value;
+        if (document.getElementById("montoEnviar").value === '') {
+            alert("Ingrese monto a enviar para realizar cálculo");
+            location.href = window.location.href;
+            return false;
+        }
+        return true;
+    }
+
+
     function enableElementInput(){
         //$('#monedaCambio').prop('readonly', false);
         var monedaCambioP = document.getElementById("monedaCambio").placeholder;

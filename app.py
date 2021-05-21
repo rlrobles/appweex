@@ -115,7 +115,7 @@ def ExisteOrden(codorden):
 """ @app.route('/prueba') """
 def TraerTipoCambioDolarSimulacion():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
+    cur.execute("SELECT FORMAT((COMPRA +0.1),3), FORMAT((VENTA + 0.1),3)  FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
     dataTC = data[0]
     cur.close()
@@ -229,7 +229,7 @@ def ObtenerIdMoneda(codigoMoneda):
 
 def TraerDataCuentas(id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT IDCUENTA, IDBANCO , NUMERO_CUENTA, NOMBRE_TITULAR, IDMONEDA from m_cuenta WHERE IDCLIENTE = '" + id + "'")
+    cur.execute("SELECT C.IDCUENTA, B.NOMBRE , C.NUMERO_CUENTA, C.NOMBRE_TITULAR, REPLACE (REPLACE(C.IDMONEDA, 1, 'SOLES'), 2, 'DOLARES') FROM m_cuenta C INNER JOIN de_banco B ON C.IDBANCO = B.IDBANCO  WHERE IDCLIENTE = '" + id + "'")
     data = cur.fetchall()
     dataCuentasCliente = data
     cur.close()
@@ -410,7 +410,7 @@ def DatosPersonales():
 def listarOrdenesByIdCliente(idCliente):
     id= str(idCliente)
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = '" +id  + "' ORDER BY FECHAHORACREACION DESC")
+    cur.execute("SELECT * , REPLACE (REPLACE(MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'), REPLACE (REPLACE(MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES') FROM m_orden WHERE IDCLIENTE = '" +id  + "' ORDER BY FECHAHORACREACION DESC")
 															
     data = cur.fetchall()
     cur.close()
