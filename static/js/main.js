@@ -295,7 +295,6 @@ function changeCoinCurrency(){
 
 
 }
-
 /*
 const btnSave = document.querySelectorAll('.btn-save')
 var tipDoc = document.getElementsByName("TipoDocumento");
