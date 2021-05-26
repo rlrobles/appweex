@@ -120,10 +120,15 @@
                                 <label for="NumeroCuenta">Numero de la cuenta:</label>
                                 <input type="text" name="NumeroCuenta"  value="" id="NumeroCuenta" onkeypress="return soloNumeros(event)" tabindex="1" class="form-control" placeholder="Número de la cuenta" required>
                             </div>
+                            
+                            <div class="form-group">
+                                <label for="NumeroCCI">CCI:</label>
+                                <input type="text" name="NumeroCCI"  value="" id="NumeroCCI" onkeypress="return soloNumeros(event)" oninput="return validarNumCuenta();" tabindex="1" class="form-control" placeholder="Número de CCI" required>
+                            </div>
 
                             <div class="form-group">
                                 <label for="NombreTitular">Nombre del Titular:</label>
-                                <input type="text" name="NombreTitular"  value="" id="NombreTitular" onkeypress="return sololetras(event)" tabindex="1" class="form-control" placeholder="Nombe del Titular" required>
+                                <input type="text" name="NombreTitular"  value="" id="NombreTitular" onkeypress="return sololetras(event)" oninput="return validarNumCCI();" tabindex="1" class="form-control" placeholder="Nombe del Titular" required>
                             </div>
 
                         <!--  <div class="form-group">
@@ -198,8 +203,40 @@
 
 
 {% block script %}
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>
+    
+    function validarNumCuenta(){
+	
+	//Almacenamos los valores
+	nombre=$('#NumeroCuenta').val();
+	
+   //Comprobamos la longitud de caracteres
+	if (nombre.length>14 && nombre.length<18){
+		return true;
+	}
+	else {
+		alert('Mínimo 15 caracteres y máximo 17 caracteres en campo Número de cuenta');
+		return false;
+		
+	}
+    }   
+
+    function validarNumCCI(){
+	
+	//Almacenamos los valores
+	nombre=$('#NumeroCCI').val();
+	
+   //Comprobamos la longitud de caracteres
+	if (nombre.length>14 && nombre.length<21){
+		return true;
+	}
+	else {
+		alert('Mínimo 15 caracteres y máximo 20 caracteres en campo Numero de CCI');
+		return false;
+		
+	}
+    } 
 
     $(function(){
 

@@ -11,6 +11,7 @@ from sendgrid.helpers.mail import Mail
 from copy import deepcopy
 from datetime import datetime
 from datetime import timedelta
+import datetime
 from flask_cors import CORS, cross_origin
 import os
 import uuid
@@ -860,8 +861,12 @@ def operacionCambioCuentas():
 
             session["nro_orden"] = nro_orden
 
-            now = datetime.now()
-            session["strHoraraInicio"] = str(now)
+            now = datetime.datetime.now() -  datetime.timedelta(hours=1)
+            nowEnd = now + datetime.timedelta(minutes=30)
+            session["strHoraInicio"] = str(now)
+            session["strHoraFin"] = str(nowEnd)
+            #now = datetime.now()
+            #session["strHoraraInicio"] = str(now)
             print("antes de insertar orden")
             cur = mysql.connection.cursor()
             cur.execute("""
