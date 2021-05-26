@@ -118,12 +118,17 @@
 
                             <div class="form-group">
                                 <label for="NumeroCuenta">Numero de la cuenta:</label>
-                                <input type="text" name="NumeroCuenta"  value="" id="NumeroCuenta" tabindex="1" class="form-control" placeholder="Número de la cuenta">
+                                <input type="text" name="NumeroCuenta"  value="" id="NumeroCuenta" onkeypress="return soloNumeros(event)" tabindex="1" class="form-control" placeholder="Número de la cuenta" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="NumeroCCI">CCI:</label>
+                                <input type="text" name="NumeroCCI"  value="" id="NumeroCCI" onkeypress="return soloNumeros(event)" oninput="return validarNumCuenta();" tabindex="1" class="form-control" placeholder="Número de CCI" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="NombreTitular">Nombre del Titular:</label>
-                                <input type="text" name="NombreTitular"  value="" id="NombreTitular" tabindex="1" class="form-control" placeholder="Nombe del Titular">
+                                <input type="text" name="NombreTitular"  value="" id="NombreTitular" onkeypress="return sololetras(event)" oninput="return validarNumCCI();" tabindex="1" class="form-control" placeholder="Nombe del Titular" required>
                             </div>
 
                         <!--  <div class="form-group">
@@ -132,7 +137,7 @@
 
                             <div class="form-group">
                                 <label>Tipo de Documento:</label>
-                                <select name="TipoDocumento" class="form-control" style="width: 100%;" id="TipoDocumento">
+                                <select name="TipoDocumento" class="form-control" style="width: 100%;" id="TipoDocumento" required>
                                     <option value="" disabled selected>Tipo de documento</option>
                                         {% for tipdoc in session["dataTipDoc"] %}
                                         <option value="{{ tipdoc.0 }}">{{ tipdoc.1 }}</option>
@@ -142,7 +147,7 @@
                             
                             <div class="form-group">
                                 <label for="NumeroDocumento">Numero del documento:</label>
-                                <input type="text" name="NumeroDocumento"  value="" id="NumeroDocumento" tabindex="1" class="form-control" placeholder="Numero de documento">
+                                <input type="text" name="NumeroDocumento"  value="" id="NumeroDocumento" onkeypress="return soloNumeros(event)" tabindex="1" class="form-control" placeholder="Numero de documento" required>
                             </div>
 
                         </div>
@@ -198,8 +203,40 @@
 
 
 {% block script %}
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>
+    
+    function validarNumCuenta(){
+	
+	//Almacenamos los valores
+	nombre=$('#NumeroCuenta').val();
+	
+   //Comprobamos la longitud de caracteres
+	if (nombre.length>14 && nombre.length<18){
+		return true;
+	}
+	else {
+		alert('Mínimo 15 caracteres y máximo 17 caracteres en campo Número de cuenta');
+		return false;
+		
+	}
+    }   
+
+    function validarNumCCI(){
+	
+	//Almacenamos los valores
+	nombre=$('#NumeroCCI').val();
+	
+   //Comprobamos la longitud de caracteres
+	if (nombre.length>14 && nombre.length<21){
+		return true;
+	}
+	else {
+		alert('Mínimo 15 caracteres y máximo 20 caracteres en campo Numero de CCI');
+		return false;
+		
+	}
+    } 
 
     $(function(){
 
@@ -219,6 +256,52 @@
         });
 
     });
+
+    function soloNumeros(e) {
+        key=e.keyCode || e.which;
+ 
+        teclado=String.fromCharCode(key).toLowerCase();
+ 
+        numeros="0123456789 ";
+ 
+        especiales="8-37-38-46-164";
+ 
+        teclado_especial=false;
+ 
+        for(var i in especiales){
+            if(key==especiales[i]){
+                teclado_especial=true;
+                break;
+            }
+        }
+ 
+        if(numeros.indexOf(teclado)==-1 && !teclado_especial){
+            return false;
+        }
+    }
+
+    function sololetras(e) {
+        key=e.keyCode || e.which;
+ 
+        teclado=String.fromCharCode(key).toLowerCase();
+ 
+        letras="qwertyuiopasdfghjklñzxcvbnm ";
+ 
+        especiales="8-37-38-46-164";
+ 
+        teclado_especial=false;
+ 
+        for(var i in especiales){
+            if(key==especiales[i]){
+                teclado_especial=true;
+                break;
+            }
+        }
+ 
+        if(letras.indexOf(teclado)==-1 && !teclado_especial){
+            return false;
+        }
+    }
         
 </script>
 
