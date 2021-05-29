@@ -37,8 +37,8 @@ def jobUpdateTipoCambio():
     valorTipoCambioCompra, valorTipoCambioVenta = getTipoCambioInvesting('https://es.investing.com/currencies/usd-pen')
     data = {
         "id": 1,
-        "compra": valorTipoCambioCompra,
-        "venta": valorTipoCambioVenta
+        "compra": round(float(valorTipoCambioCompra) + 0.007, 3),
+        "venta": round(float(valorTipoCambioVenta) + 0.007, 3) 
     }
     print(data)
     response = apiUpdateTipoCambioInvesting(data)

@@ -116,7 +116,7 @@ def ExisteOrden(codorden):
 """ @app.route('/prueba') """
 def TraerTipoCambioDolarSimulacion():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT FORMAT((COMPRA +0.1),3), FORMAT((VENTA + 0.1),3)  FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
+    cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
     dataTC = data[0]
     cur.close()
@@ -148,8 +148,8 @@ def apiTipoCambioMonedashome(moneda):
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
-    equivalenteUSD = 1 / data[0][0]
-    equivalentePEN = data[0][1]
+    equivalenteUSD = 1 / data[0][1]
+    equivalentePEN = data[0][0]
     cur.close()
     
     if (moneda == 'PEN'):
