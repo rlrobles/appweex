@@ -357,8 +357,26 @@ def Home():
     #print(dataTipoCambio)
     return render_template('home.html', dataTC = dataTipoCambio)
 
+def getSesiones():
+    #validateLoginRequired()
+    session.permanent == True
+    sesions = {
+        "nameUser": session['nameUser'],
+        "role": session['role']
+    }
+    return sesions
+
+def putSessions(function):
+    def injectSession():
+        #var_uppercase = function().upper()
+        var_uppercase = 'fffff'
+        print("resultado")
+        return var_uppercase
+    return injectSession
+
 @app.route('/inicio')
 #@login_required
+#@putSessions
 def Inicio():
     #validateLoginRequired()
     session.permanent == True
@@ -366,12 +384,29 @@ def Inicio():
     session['idCli']=idCliente
     name = obtenerNombreUserLogueado(session['user'])
     session['nameUser'] = name
-    return render_template('inicio.html', nameUser = name)
+    role = session['role']
+    print("inicio form")
+    print(getSesiones())
+    sesions = getSesiones()
+    return render_template('inicio.html', nameUser = name, role = role, sesions=sesions)
 
 @app.route('/logout')
 def logout():
     session.pop("user", None)
     return redirect(url_for('login'))
+
+def addSesion():
+    session.permanent == True
+    print("add ssss")
+    session['role'] = 3
+
+@app.before_request
+def before_request_func():
+    session.permanent == True
+    session['role'] = None
+    session['nameUser'] = None
+    print("before_request is running!")
+    #return "Intercepted by before_request"
 
 @app.route('/cuenta')
 #@login_required
@@ -398,10 +433,12 @@ def Cuenta():
         items.append(an_item)
    
     session["items"] = items
-
+    role = session['role']
+    session['role'] = 1
     print(items)
-
-    return render_template('cuenta.html')
+    sesions = getSesiones()
+    #addSesion()
+    return render_template('cuenta.html', role = role, sesions=sesions)
 
 @app.route('/datos-personales')
 #@login_required
@@ -654,18 +691,19 @@ def add_client():
         fotoDocumento = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDoc
         fotoDocumentoB = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDocPosterior
         #fotoDocumento = request.form['FotoDocumento']
-
-        now = datetime.now()
-
+        #print("ddddddddddddd")
+        #print(datetime.datetime.now())
+        now = datetime.datetime.now()
+        
         cur = mysql.connection.cursor()
         
         cur.execute("""
             INSERT INTO m_cliente
-            VALUES(null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES(null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, 
         (nombre, apellidoPaterno, apellidoMaterno, correoElectronico,celular, generate_password_hash(password), 
         token, tipoDocumento, numeroDocumento, fechaEmisionDocumento, personaPolitica, tipoPersona, ocupacion,
-        fotoCliente, fotoDocumento, fotoDocumentoB, now))#uso de tupla
+        fotoCliente, fotoDocumento, fotoDocumentoB, now, '2'))#uso de tupla
         mysql.connection.commit()    
 
         flash('Usuario registrado correctamente')
@@ -1034,6 +1072,7 @@ def loginValidate():
                 #EsCorrectoPasswordHash(user,password)   
                 #return render_template("index.html")
                 session['user'] = user
+                session['role'] = 1
                 print(user)	   
                 return redirect(url_for('Inicio'))
             else:
