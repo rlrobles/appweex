@@ -103,6 +103,13 @@ def ExisteCliente(correo):
     else:
         return False
 
+def ObtenerRolByUser(username):
+    cur = mysql.connection.cursor() 
+    cur.execute("SELECT ROLE_ID FROM m_cliente WHERE CORREO_ELECTRONICO = '" + username + "'")
+    data = cur.fetchall()
+    cur.close()
+    return data[0][0]
+
 def ExisteOrden(codorden):
     cur = mysql.connection.cursor() 
     cur.execute("SELECT * FROM m_orden WHERE CODORDEN = '" + codorden + "'")
@@ -398,13 +405,14 @@ def logout():
 def addSesion():
     session.permanent == True
     print("add ssss")
-    session['role'] = 3
+    #session['role'] = 3
 
 @app.before_request
 def before_request_func():
     session.permanent == True
-    session['role'] = None
-    session['nameUser'] = None
+    session['role'] = session['role']
+    session['nameUser'] = session['nameUser']
+    print(session)
     print("before_request is running!")
     #return "Intercepted by before_request"
 
@@ -434,7 +442,7 @@ def Cuenta():
    
     session["items"] = items
     role = session['role']
-    session['role'] = 1
+    #session['role'] = 1
     print(items)
     sesions = getSesiones()
     #addSesion()
@@ -445,11 +453,14 @@ def Cuenta():
 def DatosPersonales():
     return render_template('datos-personales.html')
 
-def listarOrdenesByIdCliente(idCliente):
+def listarOrdenesByIdCliente(idCliente, rolId):
     id= str(idCliente)
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * , REPLACE (REPLACE(MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'), REPLACE (REPLACE(MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES') FROM m_orden WHERE IDCLIENTE = '" +id  + "' ORDER BY FECHAHORACREACION DESC")
-															
+    #cur.execute("SELECT * , REPLACE (REPLACE(MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'), REPLACE (REPLACE(MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES') FROM m_orden WHERE IDCLIENTE = '" +id  + "' ORDER BY FECHAHORACREACION DESC")
+    if rolId == '1':
+        cur.execute("SELECT * , REPLACE (REPLACE(MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'), REPLACE (REPLACE(MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES') FROM m_orden WHERE IDCLIENTE = '" +id  + "' ORDER BY FECHAHORACREACION DESC")
+    elif rolId == '2':
+        cur.execute("SELECT * , REPLACE (REPLACE(MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'), REPLACE (REPLACE(MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES') FROM m_orden ORDER BY FECHAHORACREACION DESC")
     data = cur.fetchall()
     cur.close()
     return data
@@ -482,7 +493,7 @@ def Ordenes():
     session.permanent == True
     print("Listar orden")
     print(session['user'])		   
-    listOrdenes = listarOrdenesByIdCliente(session['idCli'])
+    listOrdenes = listarOrdenesByIdCliente(session['idCli'], session['role'])
     return render_template('ordenes.html', data = listOrdenes, nameUser = session['nameUser'] )
 
 @app.route('/')
@@ -1067,13 +1078,15 @@ def loginValidate():
             #if(EsCorrectoPasswordHash(user, password)):
                 #print('Inicio sesion correcto')
 
+            rolUser = ObtenerRolByUser(user)
+            print(rolUser)
             if(EsCorrectoPasswordHash(user, password)):
                 print('Inicio sesion correcto')
                 #EsCorrectoPasswordHash(user,password)   
                 #return render_template("index.html")
                 session['user'] = user
-                session['role'] = 1
-                print(user)	   
+                session['role'] = rolUser
+                print(session['role'])	   
                 return redirect(url_for('Inicio'))
             else:
                 print('password incorrecto')
@@ -1135,6 +1148,16 @@ def reverse_decorator(function):
 def accesoTest():
     
     return "fff"
+
+
+@app.route('/admin', methods=['GET','POST'])
+def admin():
+    print("admin")
+    #validateLoginRequired()
+    #if 'user' in session and request.path == '/login':
+    #    print('redirect')
+    #return redirect(url_for('Cuenta'))
+    return render_template("admin.html")
 
 # @login_manager.user_loader
 # def load_user(username):
