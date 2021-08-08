@@ -30,6 +30,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = "./Imagenes/Orden"
 
 app = Flask(__name__,
             static_url_path='', 
@@ -361,6 +362,7 @@ def Home():
     #validateLoginRequired()
     #print(str(uuid.uuid4()))
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
+    session["dataTC"] = dataTipoCambio
     #print(dataTipoCambio)
     return render_template('home.html', dataTC = dataTipoCambio)
 
@@ -397,6 +399,17 @@ def Inicio():
     sesions = getSesiones()
     return render_template('inicio.html', nameUser = name, role = role, sesions=sesions)
 
+@app.route('/inicio2')
+#@login_required
+def Inicio2():
+    #validateLoginRequired()
+    session.permanent == True
+    idCliente = obtenerIdClienteUsuLogueado(session['user'])
+    session['idCli']=idCliente
+    name = obtenerNombreUserLogueado(session['user'])
+    session['nameUser'] = name
+    return render_template('inicio2.html', nameUser = name)
+
 @app.route('/logout')
 def logout():
     session.pop("user", None)
@@ -410,8 +423,8 @@ def addSesion():
 @app.before_request
 def before_request_func():
     session.permanent == True
-    session['role'] = session['role']
-    session['nameUser'] = session['nameUser']
+    #session['role'] = session['role']
+    #session['nameUser'] = session['nameUser']
     print(session)
     print("before_request is running!")
     #return "Intercepted by before_request"
@@ -736,11 +749,49 @@ def get_contact(id):
          return f"<h1>{user}</h1>"
     else: """
 
+@app.route("/tasaCambioAdmin" , methods=['GET','POST'])
+#@login_required
+def tasaCambioAdmin():
+    dataTipoCambio = TraerTipoCambioDolarSimulacion()
+   
+    if request.method == 'POST':
+        tasaCompra = request.form['tasaCompra']
+        tasaVenta = request.form['tasaVenta']
+
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE tasa_cambio
+                SET COMPRA = %s,
+                    VENTA = %s
+                WHERE id = %s
+        """, (tasaCompra, tasaVenta, 1))
+        mysql.connection.commit()
+        flash('Tasa actuazalida Correctamente')
+
+        return redirect(url_for('tasaCambioAdmin')) 
+    else:
+        print("GET")
+        return render_template("tasa-cambio-admin.html", dataTC = dataTipoCambio,  )
+
+@app.route("/tasa-cambio-post" , methods=['GET','POST'])
+def tasaCambioPost():
+    if request.method == 'POST':
+        dataTipoCambio = TraerTipoCambioDolarSimulacion()
+        session["dataTC"] = dataTipoCambio
+
+        tasaCompra = request.form['tasaCompra']
+        session["tasaCompra"] = tasaCompra    
+
+        tasaVenta = request.form['tasaVenta']
+        session["tasaVenta"] = tasaVenta
+
+        return redirect(url_for('tasaCambioAdmin')) 
+
 @app.route("/operacion-cambio-post" , methods=['GET','POST'])
 def operacionCambioPost():
     if request.method == 'POST':
-        """ dataTipoCambio = TraerTipoCambioDolarSimulacion()
-        session["dataTC"] = dataTipoCambio    """
+        dataTipoCambio = TraerTipoCambioDolarSimulacion()
+        session["dataTC"] = dataTipoCambio
 
         montoEnviar = request.form['montoEnviar']
         session["montoEnviar"] = montoEnviar    
@@ -764,11 +815,9 @@ def operacionCambioPost():
 
 
 @app.route("/operacion-cambio" , methods=['GET','POST'])
-#@login_required
 def operacionCambio():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
-    session["dataTC"] = dataTipoCambio   
-
+   
     if request.method == 'POST':   
         """ dataTipoCambio = TraerTipoCambioDolarSimulacion()
         session["dataTC"] = dataTipoCambio    """
@@ -780,6 +829,11 @@ def operacionCambio():
         print("GET")
         return render_template("operacion-cambio.html", dataTC = dataTipoCambio,  )
 
+def convertToBinaryData(filename):
+    # Convert digital data to binary format
+    with open(filename, 'rb') as file:
+        binaryData = file.read()
+    return binaryData
 
 @app.route("/actualizar/numero/operacion", methods=['GET','POST'])
 def operacionActualizarNumeroOperacion():
@@ -789,14 +843,25 @@ def operacionActualizarNumeroOperacion():
             codIn= session["codinterno"]
             print("Actualizar con tipo operacion")
             NumeroOperacion = request.form['NumeroOperacion']
-            #ComprobanteOperacion = request.form['ComprobanteOperacion']
+            #uploaded_file = request.files['ComprobanteOperacion']
+            # if uploaded_file.filename != '':
+            #    uploaded_file.save(uploaded_file.filename)
+            #    empPicture = convertToBinaryData(uploaded_file.filename)
+
+            f = request.files['ComprobanteOperacion']
+            nombre = '/Imagenes/Orden/' + f.filename
+            if f.filename != '':
+                filename = secure_filename(f.filename)
+                f.save(os.path.join('./Imagenes/Orden',filename))
+            
             cur = mysql.connection.cursor()
             cur.execute("""
                 UPDATE m_orden
-                SET CODORDEN = %s
+                SET CODORDEN = %s ,
+                    RUTA_COMPROBANTE = %s
                 WHERE CODINTERNO = %s
                 """, 
-                ( NumeroOperacion, codIn )) 
+                ( NumeroOperacion, nombre, codIn)) 
             mysql.connection.commit()
 
             return redirect(url_for('Ordenes'))
@@ -920,9 +985,9 @@ def operacionCambioCuentas():
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO m_orden
-                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
-            ( codinterno, nro_orden, idCliente, now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1' )) 
+            ( codinterno, nro_orden, idCliente, now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1', '')) 
             mysql.connection.commit()   
 
             return redirect(url_for('operacionValidarOrden', codinterno = codinterno))
@@ -1086,8 +1151,11 @@ def loginValidate():
                 #return render_template("index.html")
                 session['user'] = user
                 session['role'] = rolUser
-                print(session['role'])	   
-                return redirect(url_for('Inicio'))
+                print(session['role'])	
+                if ( rolUser == '1'):   
+                    return redirect(url_for('Inicio'))
+                else:
+                    return redirect(url_for('Inicio2'))
             else:
                 print('password incorrecto')
                 return render_template("login.html")
