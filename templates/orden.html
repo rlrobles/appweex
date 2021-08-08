@@ -125,7 +125,7 @@
         <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
             
-            <form action="/actualizar/numero/operacion" method="POST" role="form" style="display: block;">
+            <form action="/actualizar/numero/operacion" method="POST" role="form" style="display: block;" enctype="multipart/form-data">
             <div class="modal-content">
                 <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLongTitle">ELIGE COMO
@@ -138,13 +138,13 @@
                     
                     
                     <div class="form-group">
-                        <label for="NumeroCuenta">Número de Operacion</label>
+                        <label for="NumeroOperacion">Número de Operacion</label>
                         <input type="text" name="NumeroOperacion"  value="" id="NumeroOperacion" tabindex="1" class="form-control" placeholder="Número de Operacion">
                     </div>
 
                     <div class="form-group">
-                        <label for="NumeroDocumento">Adjuntar comprobante</label>
-                        <input type="file" name="ComprobanteOperacion"  value="" id="ComprobanteOperacion" tabindex="1" class="form-control" placeholder="Numero de documento">
+                        <label for="ComprobanteOperacion">Adjuntar comprobante</label>
+                        <input type="file" name="ComprobanteOperacion"  value="" id="ComprobanteOperacion" tabindex="1" class="form-control" placeholder="Comprobante">
                     </div>
 
                 </div>
