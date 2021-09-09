@@ -160,8 +160,8 @@ function calcSimulationRecibir(){
     var textCompra = document.querySelector(".data-tc-compra").textContent;
     var textVenta = document.querySelector(".data-tc-venta").textContent;
 
-    var tcCompra = textCompra.slice(textCompra.length - 5, textCompra.length);
-    var tcVenta = textVenta.slice(textVenta.length - 5, textVenta.length);
+    var tcCompra = textCompra.slice(textCompra.length - 4, textCompra.length);
+    var tcVenta = textVenta.slice(textVenta.length - 4, textVenta.length);
 
     var tcCompraF = parseFloat(tcCompra);
     var tcVentaF = parseFloat(tcVenta);
@@ -177,7 +177,7 @@ function calcSimulationRecibir(){
 
     if(textMonedaEnviar == "soles"){
         var estado = 2;
-    }
+    }    
 
     switch(estado){
         case 1:
