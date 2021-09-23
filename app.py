@@ -156,8 +156,8 @@ def apiTipoCambioMonedashome(moneda):
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
-    equivalenteUSD = 1 / data[0][1]
-    equivalentePEN = data[0][0]
+    equivalenteUSD = 1 / data[0][0]
+    equivalentePEN = data[0][1]
     cur.close()
     
     if (moneda == 'PEN'):

@@ -148,9 +148,6 @@ function validate(evt) {
 
 function calcSimulationRecibir(){
 
-    var tcCompra = $('#tcCompra').val();
-    var tcVenta = $('#tcVenta').val();
-
     var montoEnviar = $('#montoEnviar').val();
     var montoEnviarF = parseFloat(montoEnviar);
 
@@ -160,8 +157,8 @@ function calcSimulationRecibir(){
     var textCompra = document.querySelector(".data-tc-compra").textContent;
     var textVenta = document.querySelector(".data-tc-venta").textContent;
 
-    var tcCompra = textCompra.slice(textCompra.length - 4, textCompra.length);
-    var tcVenta = textVenta.slice(textVenta.length - 4, textVenta.length);
+    var tcCompra = textCompra.slice(26, textCompra.length);
+    var tcVenta = textVenta.slice(25, textVenta.length);
 
     var tcCompraF = parseFloat(tcCompra);
     var tcVentaF = parseFloat(tcVenta);
@@ -218,8 +215,9 @@ function calcSimulationEnviar(){
     var textCompra = document.querySelector(".data-tc-compra").textContent;
     var textVenta = document.querySelector(".data-tc-venta").textContent;
 
-    var tcCompra = textCompra.slice(textCompra.length - 5, textCompra.length);
-    var tcVenta = textVenta.slice(textVenta.length - 5, textVenta.length);
+    var tcCompra = textCompra.slice(26, textCompra.length);
+    var tcVenta = textVenta.slice(25, textVenta.length);
+
 
     var tcCompraF = parseFloat(tcCompra);
     var tcVentaF = parseFloat(tcVenta);
@@ -240,6 +238,7 @@ function calcSimulationEnviar(){
     switch(estado){
         case 1:
             var resultado = montoRecibirF / tcCompraF;
+            console.log('default2'); 
             break;
         case 2:
             var resultado = montoRecibirF *  tcVentaF;
