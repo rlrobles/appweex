@@ -157,7 +157,7 @@ def apiTipoCambioMonedashome(moneda):
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
     equivalenteUSD = 1 / data[0][1]
-    equivalentePEN = data[0][1]
+    equivalentePEN = data[0][0]
     cur.close()
     
     if (moneda == 'PEN'):
@@ -180,12 +180,12 @@ def apiTipoCambioMonedashome(moneda):
 
 @app.route('/weex/tasa-cambioVenta/v1/<moneda>', methods=['GET'])
 @cross_origin()
-def apiTipoCambioMonedashome(moneda):
+def apiTipoCambioMonedashome2(moneda):
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
     equivalenteUSD = 1 / data[0][0]
-    equivalentePEN = data[0][0]
+    equivalentePEN = data[0][1]
     cur.close()
     
     if (moneda == 'PEN'):
@@ -899,6 +899,7 @@ def operacionActualizarNumeroOperacion():
 @app.route("/operacion/validar/<codinterno>", methods=['GET','POST'])
 #@login_required
 def operacionValidarOrden(codinterno):
+    
     return render_template("orden.html")
 
 @app.route("/procesar-orden", methods=['GET','POST'])
@@ -1004,9 +1005,9 @@ def operacionCambioCuentas():
             session["nro_orden"] = nro_orden
 
             now = datetime.datetime.now() -  datetime.timedelta(hours=1)
-            nowEnd = now + datetime.timedelta(minutes=30)
-            session["strHoraInicio"] = str(now)
-            session["strHoraFin"] = str(nowEnd)
+            nowEnd = now + datetime.timedelta(minutes=20)
+            session["strHoraInicio"] = str(now.strftime("%b %d %Y %H:%M"))
+            session["strHoraFin"] = str(nowEnd.strftime("%b %d %Y %H:%M"))
             #now = datetime.now()
             #session["strHoraraInicio"] = str(now)
             print("antes de insertar orden")
