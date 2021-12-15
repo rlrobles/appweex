@@ -14,15 +14,15 @@
 
 <div class="row">
     {% if session["role"] == '1' %}
-      <div class="col-sm-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Operación de Cambio</h5>
-            <p class="card-text">En esta sección podrá realizar las operaciones de tipo de cambio</p>
-            <a href="/operacion-cambio" class="btn btn-primary" >Ir a la sección</a>
-          </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Operación de Cambio</h5>
+          <p class="card-text">En esta sección podrá realizar las operaciones de tipo de cambio</p>
+          <a href="/app/operacion-cambio" class="btn btn-primary" >Ir a la sección</a>
         </div>
       </div>
+    </div>
     {% endif %} 
     
     <div class="col-sm-6">
@@ -30,7 +30,7 @@
         <div class="card-body">
           <h5 class="card-title">Órdenes</h5>
           <p class="card-text">En esta sección podrá acceder al historial de órdenes</p>
-          <a href="/ordenes" class="btn btn-primary">Ir a la sección</a>
+          <a href="/app/ordenes" class="btn btn-primary">Ir a la sección</a>
         </div>
       </div>
     </div>
@@ -41,7 +41,7 @@
         <div class="card-body">
           <h5 class="card-title">Datos personales</h5>
           <p class="card-text">En esta seccióon podrá consultar y modificar sus datos personales</p>
-          <a href="/datos-personales" class="btn btn-primary">Ir a la sección</a>
+          <a href="/app/datos-personales" class="btn btn-primary">Ir a la sección</a>
         </div>
       </div>
     </div>
@@ -50,7 +50,7 @@
         <div class="card-body">
           <h5 class="card-title">Cuentas</h5>
           <p class="card-text">En esta sección podrá consultar sus cuentas personales</p>
-          <a href="/cuenta" class="btn btn-primary">Ir a la sección</a>
+          <a href="/app/cuenta" class="btn btn-primary">Ir a la sección</a>
         </div>
       </div>
     </div>
@@ -60,9 +60,9 @@
       <div class="card-body">
         <h5 class="card-title">Cambiar Tasa Admin</h5>
         <p class="card-text">En esta sección podrá cambiar la tasa de cambio de Soles/Dolares</p>
-        <a href="/tasaCambioAdmin" class="btn btn-primary">Ir a la sección</a>
+        <a href="/app/tasaCambioAdmin" class="btn btn-primary">Ir a la sección</a>
       </div>
-    </div>
+  </div>
   </div>
 </div>
  {% endif %}   

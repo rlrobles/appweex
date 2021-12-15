@@ -1,0 +1,26 @@
+{% extends 'layoutApp.html' %}
+
+{% block body %}
+
+<div class="col-md-3 offset-md-3">
+    <div class="card card-body">
+        <form action="/updateOrder/{{order.0}}" method="POST">
+            <div class="form-group">
+                <label for="" class="form-control">Numero De orden</label>
+                <input type="text" name="NumeroOrden" placeholder="NumeroOrden" value="{{order.1}}"  class="form-control" readonly>
+             </div>
+
+            <div class="form-group">
+                <label for="" class="form-control">Estado</label>
+                <input type="text" name="estado" placeholder="Estado" value="{{order.12}}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-block">Guardar</button>
+            </div>            
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

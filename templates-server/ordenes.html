@@ -56,10 +56,10 @@
                <td> {{ item.numDoc }} </td>
                <td> {{ item.estado }} </td>
                {% if session["role"] == '2' %}
-                  <td> <a href="/editarOrden/{{item.id}}"  class="btn btn-primary">Editar Estado</a> </td> 
+                  <td> <a href="/app/editarOrden/{{item.id}}"  class="btn btn-primary">Editar Estado</a> </td> 
                {% endif %} 
                {% if session["role"] == '1' %}
-                  <td> <a href="/editarNumOperacion/{{item.id}}"  class="btn btn-primary">Editar</a>
+                  <td> <a href="/app/editarNumOperacion/{{item.id}}"  class="btn btn-primary">Editar</a>
                   </td>
                {% endif %}   
                

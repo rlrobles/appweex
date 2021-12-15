@@ -4,7 +4,52 @@
 {% block body %}
 
 <h2> Datos Personales </h2>
+<div class="col-md-4 offset-md-4">
+    <div class="card card-body">
+        <form action="" method = "POST">
+            <label for="" class="label">Nombres</label>
+            <div class="form-group">
+                <input type="text" name="Nombres" value="{{contact.1}}" placeholder="Fullname" class="form-group" readonly>
+            </div>
 
+            <label for="" class="label">Apellido Paterno</label>
+            <div class="form-group">
+                <input type="text" name="ApePaterno" value="{{contact.2}}" placeholder="Apellido Paterno" class="form-group" readonly>
+            </div>
+
+            <label for="" class="label">Apellido Materno</label>
+            <div class="form-group">
+                <input type="text" name="ApeMaterno" value="{{contact.3}}" placeholder="Apellido Materno" class="form-group" readonly>
+            </div>
+
+            <label for="" class="label">Email</label>
+            <div class="form-group">
+                <input type="text" name="Email" value="{{contact.4}}" placeholder="Email" class="form-group"readonly>
+            </div>
+
+            <label for="" class="label">Telefono</label>
+            <div class="form-group">
+                <input type="text" name="Telefono" value="{{contact.5}}" placeholder="Telefono" class="form-group">
+            </div>
+
+            <label for="" class="label">Numero de Documento</label>
+            <div class="form-group">
+                <input type="text" name="Numero de documento" value="{{contact.9}}" placeholder="Numero de Documento" class="form-group" readonly>
+            </div>
+            
+            <label for="" class="label">Ocupacion</label>
+            <div class="form-group">
+                <input type="text" name="Ocupacion" value="{{contact.13}}" placeholder="Ocupacion" class="form-group">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-block">
+                Save
+            </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 {% endblock %}

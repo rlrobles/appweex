@@ -36,8 +36,8 @@
                             <td>{{ item.cuenta }}</td>
                             <td>{{ item.titular }}</td>
                             <td>{{ item.moneda }}</td>
-                    <td> <a href="/editarCuenta/{{item.id}}" class="btn btn-primary">Editar</a>
-                        <a href="/eliminarCuenta/{{item.id}}" class="btn btn-danger" onclick="return confirm('Estás seguro que deseas eliminar el registro?');">Eliminar</a>
+                    <td> <a href="/app/editarCuenta/{{item.id}}" class="btn btn-primary">Editar</a>
+                        <a href="/app/eliminarCuenta/{{item.id}}" class="btn btn-danger" onclick="return confirm('Estás seguro que deseas eliminar el registro?');">Eliminar</a>
                     </td>
                         </tr>
                         {% endfor %}

@@ -1,0 +1,26 @@
+{% extends 'layoutApp.html' %}
+
+{% block body %}
+
+<div class="col-md-3 offset-md-3">
+    <div class="card card-body">
+        <form action="/updateNumOperation/{{order.0}}" method="POST" role="form" style="display: block;" enctype="multipart/form-data" onsubmit="return confirm('Tu orden esta siendo verificada, te avisaremos cuando tu cambio haya sido enviado');">
+            <div class="form-group">
+                <label for="" class="form-control">Número de Operacion</label>
+				<input type="text" name="NumeroOperacion" value="{{order.2}}" id="NumeroOperacion" tabindex="1" class="form-control" placeholder="Número de Operacion" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="ComprobanteOperacion">Adjuntar comprobante</label>
+                <input type="file" name="ComprobanteOperacion"  value="" id="ComprobanteOperacion" tabindex="1" class="form-control" placeholder="Comprobante">
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-block">Guardar</button>
+            </div>            
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

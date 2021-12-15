@@ -1,0 +1,32 @@
+{% extends 'layoutApp.html' %}
+
+
+{% block body %}
+
+<h2 align="center">Agrega registro</h2>
+
+<div class="card card-body">
+    <form action="/app/add_test" method = "POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="NumeroCuenta">Numero de la cuenta:</label>
+            <input type="text" name="NumeroCuenta"  value="" id="NumeroCuenta" tabindex="1" class="form-control" placeholder="Número de la cuenta">
+        </div>
+
+        <div class="form-group">
+            <label for="NombreTitular">Nombre del Titular:</label>
+            <input type="text" name="NombreTitular"  value="" id="NombreTitular" tabindex="1" class="form-control" placeholder="Nombe del Titular">
+        </div>
+        
+        <div class="form-group">
+            <label for="NumeroDocumento">Numero del documento:</label>
+            <input type="text" name="NumeroDocumento"  value="" id="NumeroDocumento" tabindex="1" class="form-control" placeholder="Numero de documento">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-success btn-block btn-save">
+            Save
+        </button>
+    </form>
+</div>
+
+{% endblock %}

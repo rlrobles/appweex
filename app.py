@@ -11,6 +11,7 @@ from sendgrid.helpers.mail import Mail
 from copy import deepcopy
 from datetime import datetime
 from datetime import timedelta
+import datetime
 from flask_cors import CORS, cross_origin
 import os
 import uuid
@@ -26,13 +27,24 @@ import schedule
 import time
 import webscraping
 from apscheduler.schedulers.background import BackgroundScheduler
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from array import array
+from flask import abort 
+from authlib.integrations.flask_client import OAuth
 
 app = Flask(__name__)
+#app.config['UPLOAD_FOLDER'] = "./Imagenes/Orden"
+app.config['UPLOAD_FOLDER'] = "D:\Proyectos\ArchivosWeex\ImagenesUpload"
 
 app = Flask(__name__,
             static_url_path='', 
             static_folder='static',
             template_folder='templates')
+
+# flask-login
+login_manager = LoginManager()
+login_manager.init_app(app)
+#login_manager.login_view = "login"
 
 ## Mail
 #mail = Mail(app)
@@ -96,6 +108,13 @@ def ExisteCliente(correo):
     else:
         return False
 
+def ObtenerRolByUser(username):
+    cur = mysql.connection.cursor() 
+    cur.execute("SELECT ROLE_ID FROM m_cliente WHERE CORREO_ELECTRONICO = '" + username + "'")
+    data = cur.fetchall()
+    cur.close()
+    return data[0][0]
+
 def ExisteOrden(codorden):
     cur = mysql.connection.cursor() 
     cur.execute("SELECT * FROM m_orden WHERE CODORDEN = '" + codorden + "'")
@@ -106,6 +125,11 @@ def ExisteOrden(codorden):
     else:
         return False
 
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+    
 """ @app.route('/prueba') """
 def TraerTipoCambioDolarSimulacion():
     cur = mysql.connection.cursor()
@@ -120,10 +144,8 @@ def apiTipoCambioMonedas():
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
-    print(data[0][0])
-    print(data[0][1])
-    #dataTC = data[0]
-    #print("data = " + data[0])
+    #print(data[0][0])
+    #print(data[0][1])
     cur.close()
     result = {
         'ratesBD': {
@@ -135,9 +157,37 @@ def apiTipoCambioMonedas():
     ##
     return jsonify(result)
 
-@app.route('/weex/tasa-cambio/v1/<moneda>', methods=['GET'])
+@app.route('/weex/tasa-cambioCompra/v1/<moneda>', methods=['GET'])
 @cross_origin()
 def apiTipoCambioMonedashome(moneda):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
+    data = cur.fetchall()
+    equivalenteUSD = 1 / data[0][1]
+    equivalentePEN = data[0][0]
+    cur.close()
+    
+    if (moneda == 'PEN'):
+        result = {
+            'rates': {
+                'USD': equivalenteUSD,
+                'PEN': 1
+                }
+            }
+
+    if (moneda == 'USD'):
+        result = {
+            'rates': {
+                'USD': 1,
+                'PEN': equivalentePEN
+                }
+            }
+
+    return jsonify(result)
+
+@app.route('/weex/tasa-cambioVenta/v1/<moneda>', methods=['GET'])
+@cross_origin()
+def apiTipoCambioMonedashome2(moneda):
     cur = mysql.connection.cursor()
     cur.execute("SELECT COMPRA, VENTA FROM tasa_cambio WHERE IDMONEDA_1 = 2 ORDER BY FECHAHORAACTUALIZACION DESC LIMIT 1")
     data = cur.fetchall()
@@ -166,9 +216,6 @@ def apiTipoCambioMonedashome(moneda):
 @app.route('/weex/actualizar/tasa-cambio/v1', methods=['POST'])
 def updateTipoCambioInvesting():
     requestBody = request.get_json(force=True)
-    #print(requestBody['compra'])
-    # type(requestBody)
-    # print(type(requestBody))
     params = {
         "id": requestBody['id'],
         "compra": requestBody['compra'],
@@ -177,7 +224,7 @@ def updateTipoCambioInvesting():
     #print(params)
     query = "UPDATE tasa_cambio SET COMPRA = {data[compra]}, VENTA = {data[venta]} WHERE ID = {data[id]}"
     query = query.format(data=params)
-    print(query)
+    
     cur = mysql.connection.cursor()
     cur.execute(query)
     mysql.connection.commit()
@@ -191,7 +238,7 @@ def updateTipoCambioInvesting():
 
 def TraerDataBancoDeDondeEnvias():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM de_banco WHERE NOMBRE IN ('BCP','INTERBANK')")
+    cur.execute("SELECT IDBANCO, NOMBRE, DESCRIPCION FROM de_banco")
     data = cur.fetchall()
     dataBanco = data
     cur.close()
@@ -223,7 +270,15 @@ def ObtenerIdMoneda(codigoMoneda):
 
 def TraerDataCuentas(id):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT IDCUENTA, IDBANCO , NUMERO_CUENTA, NOMBRE_TITULAR, IDMONEDA from m_cuenta WHERE IDCLIENTE = '" + id + "'")
+    cur.execute("SELECT C.IDCUENTA, B.NOMBRE , C.NUMERO_CUENTA, C.NOMBRE_TITULAR, REPLACE (REPLACE(C.IDMONEDA, 1, 'SOLES'), 2, 'DOLARES') FROM m_cuenta C INNER JOIN de_banco B ON C.IDBANCO = B.IDBANCO  WHERE IDCLIENTE = '" + id + "'")
+    data = cur.fetchall()
+    dataCuentasCliente = data
+    cur.close()
+    return dataCuentasCliente
+
+def TraerDataCuentasPorMoneda(id, moneda):    
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT C.IDCUENTA, B.NOMBRE , C.NUMERO_CUENTA, C.NOMBRE_TITULAR, REPLACE (REPLACE(C.IDMONEDA, 1, 'SOLES'), 2, 'DOLARES') FROM m_cuenta C INNER JOIN de_banco B ON C.IDBANCO = B.IDBANCO  WHERE IDCLIENTE = '" + id + "' AND IDMONEDA = '" + moneda + "' ")
     data = cur.fetchall()
     dataCuentasCliente = data
     cur.close()
@@ -317,43 +372,118 @@ def MailClass():
         print("exception")
     return "envio de mail"
 
+
+def validateLoginRequired():
+    url = request.url
+    #print(url)
+    session.permanent == True
+    #print("dddsssssdd")
+
+   # print(request.path)
+
+    if 'user' in session and request.path == '/login':
+        username = session['user']
+        print("logueado y redireccionar")
+        #return render_template('inicio.html', nameUser = 'name')
+        return redirect(url_for('Cuenta'))
+        """ if request.path == '/login':
+            print('ggggggggggggg')
+            return redirect(url_for('Inicio')) """
+        print("logueado y redireccionar")
+
+    else:
+        print("no logueado")
+        return redirect(url_for('login'))
+
+
 @app.route('/home')
 def Home():
+    #validateLoginRequired()
     #print(str(uuid.uuid4()))
+    if uriApp == 'app' :
+        session['uriApp']= uriApp
+
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
+    session["dataTC"] = dataTipoCambio
     #print(dataTipoCambio)
     return render_template('home.html', dataTC = dataTipoCambio)
 
+def getSesiones():
+    #validateLoginRequired()
+    session.permanent == True
+    sesions = {
+        "nameUser": session['nameUser'],
+        "role": session['role']
+    }
+    return sesions
+
+def putSessions(function):
+    def injectSession():
+        #var_uppercase = function().upper()
+        var_uppercase = 'fffff'
+        print("resultado")
+        return var_uppercase
+    return injectSession
+
 @app.route('/inicio')
-def Inicio():
-    if "user" == "user":
-        session.permanent == True
-        #user = session["user"]
-        print("user ==================")
-        session['user111'] = 'dddddddddddddddddddddd'
-        session['username'] = session['user111']
-        #print(session['user111'])
-        return render_template('inicio.html')
-    else:
-        return render_template('inicio.html')
+#@login_required
+#@putSessions
+def Inicio():           
+    #validateLoginRequired()
+    session.permanent == True
+
+    if "role" not in session:
+        abort(404)
+
+    if "user" not in session:
+        abort(404)
+
+    idCliente = obtenerIdClienteUsuLogueado(session['user'])
+    session['idCli']=idCliente
+    name = obtenerNombreUserLogueado(session['user'])
+    session['nameUser'] = name
+    role = session['role']
+    print("inicio form")
+    print(getSesiones())
+    sesions = getSesiones()
+    return render_template('inicio.html', nameUser = name, role = role, sesions=sesions)
 
 @app.route('/logout')
 def logout():
     session.pop("user", None)
+    session.pop("role", None)
     return redirect(url_for('login'))
 
+def addSesion():
+    session.permanent == True
+    print("add ssss")
+    #session['role'] = 3
+
+@app.before_request
+def before_request_func():
+    session.permanent == True
+    #session['role'] = session['role']
+    #session['nameUser'] = session['nameUser']
+    #print(session)
+    print("before_request is running!")
+    #return "Intercepted by before_request"
+
 @app.route('/cuenta')
+#@login_required
 def Cuenta():
+    session.permanent == True
+    if "role" not in session:
+        abort(404)
+
+    if "user" not in session:
+        abort(404)
 
     key = open("key.key", "rb").read()
     f = Fernet(key)
-
-    dataCuentasUsuario = TraerDataCuentas('1')
+    idCLiente= session['idCli']
+    
+    dataCuentasUsuario = TraerDataCuentas(str(idCLiente))
     listCuentasUsuario = list(dataCuentasUsuario)
-
-    print(dataCuentasUsuario)
-    print(listCuentasUsuario)
-
     numeroRegistros = len(listCuentasUsuario)
 
     items = []
@@ -363,41 +493,229 @@ def Cuenta():
         # dict == {}
         # you just don't have to quote the keys
         #an_item = dict(banco=tupleAux[0], cuenta=tupleAux[1], titular=tupleAux[2], moneda=tupleAux[3])
-        an_item = dict(banco= tupleAux[1], cuenta= f.decrypt(tupleAux[2]).decode('utf-8') , titular=f.decrypt(tupleAux[3]).decode('utf-8'), moneda=tupleAux[4])
+        an_item = dict(id = tupleAux[0], banco= tupleAux[1], cuenta= f.decrypt(tupleAux[2]).decode('utf-8') , titular=f.decrypt(tupleAux[3]).decode('utf-8'), moneda=tupleAux[4])
         items.append(an_item)
    
-    
     session["items"] = items
+    role = session['role']
+    #session['role'] = 1
+    #print(items)
+    sesions = getSesiones()
+    #addSesion()
+    return render_template('cuenta.html', role = role, sesions=sesions)
 
-    print(items)
+@app.route('/eliminarCuenta/<string:id>')
+def delete_account(id):
+    cur = mysql.connection.cursor() 
+    cur.execute("DELETE FROM m_cuenta WHERE IDCUENTA = {0} " .format(id))
+    mysql.connection.commit()
+    flash('Cuenta Eliminada Correctamente')
+    return redirect(url_for('Cuenta'))
 
+@app.route('/editarCuenta/<id>')
+def edit_account(id):
+    cur = mysql.connection.cursor() 
+    cur.execute('SELECT * FROM m_cuenta WHERE IDCUENTA = %s',[id] )
+    data = cur.fetchall()
+    
+    cur2 = mysql.connection.cursor() 
+    cur2.execute('SELECT * FROM de_moneda')
+    data2 = cur2.fetchall()
 
-    return render_template('cuenta.html')
+    cur3 = mysql.connection.cursor() 
+    cur3.execute('SELECT * FROM de_banco')
+    data3 = cur3.fetchall()
 
+    key = open("key.key", "rb").read()
+    f = Fernet(key)
+    tupleAux = tuple(data[0])
+    an_item = dict(id = tupleAux[0], banco= tupleAux[2], cuenta= f.decrypt(tupleAux[5]).decode('utf-8') , titular=f.decrypt(tupleAux[6]).decode('utf-8'), moneda=tupleAux[4])
+    print("Cuenta a editar")
+    print(an_item)
+
+    return render_template('edit-cuenta.html', account = an_item, tipoMonedas = data2 , listBanco = data3 )
+
+@app.route('/updateAccount/<id>', methods = ['POST'])
+def update_account(id):
+    if request.method == 'POST':
+        
+        key = open("key.key", "rb").read()
+        f = Fernet(key)
+
+        banco = request.form.get('Banco', None)        
+        tipoMon = request.form.get('TipoMoneda', None)
+
+        numCuenta = request.form['NumeroCuenta']
+        numCuentaEncrypt = f.encrypt(numCuenta.encode('utf-8'))
+        nomTitu = request.form['NombreTitular']
+        nomTituEncrypt = f.encrypt(nomTitu.encode('utf-8'))
+
+        cur = mysql.connection.cursor() 
+        cur.execute(""" 
+            UPDATE m_cuenta 
+            SET IDBANCO = %s, IDMONEDA= %s, NUMERO_CUENTA= %s, NOMBRE_TITULAR = %s 
+            WHERE IDCUENTA = %s 
+            """ ,(banco , tipoMon, numCuentaEncrypt, nomTituEncrypt, id))
+        flash('Cuenta Actualizada Correctamente')
+        mysql.connection.commit()
+        return redirect(url_for('Cuenta'))
 
 @app.route('/datos-personales')
+#@login_required
 def DatosPersonales():
-    return render_template('datos-personales.html')
 
+    if "role" not in session:
+        abort(404)
 
-def listarOrdenesByIdCliente(idCliente = 1):
+    if "user" not in session:
+        abort(404)
+
+    user = session['user']
     cur = mysql.connection.cursor() 
-    #cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = '" + idCliente + "'")
-    cur.execute("SELECT * FROM m_orden WHERE IDCLIENTE = 1")
+    cur.execute("SELECT * FROM m_cliente WHERE CORREO_ELECTRONICO = '" + user + "'")
+    data = cur.fetchall()
+    cur.close()
+
+    return render_template('datos-personales.html', contact = data[0])
+
+def listarOrdenesByIdCliente(idCliente, rolId):
+    id= str(idCliente)
+    cur = mysql.connection.cursor()
+    if rolId == '1':
+        cur.execute("SELECT O.ID,O.CODINTERNO, O.CODORDEN,O.MTOENVIO, REPLACE (REPLACE(O.MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'), O.MTORECIBO, REPLACE (REPLACE(O.MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES'), REPLACE(REPLACE (REPLACE(O.ESTADO, 1, 'PENDIENTE'), 2, 'REALIZADO'), 3, 'ANULADO'),B.NOMBRE, C.NUMERO_CUENTA, C.NUMDOC FROM m_orden O INNER JOIN m_cuenta C ON O.IDCUENTARECIBO = C.IDCUENTA INNER JOIN de_banco B ON C.IDBANCO = B.IDBANCO  WHERE C.IDCLIENTE = "+ id + " ORDER BY FECHAHORACREACION DESC ")		
+    elif rolId == '2':
+        cur.execute("""
+        SELECT O.ID, O.CODINTERNO, O.CODORDEN,O.MTOENVIO, REPLACE (REPLACE(O.MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'),
+            O.MTORECIBO, REPLACE (REPLACE(O.MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES'),
+            REPLACE(REPLACE (REPLACE(O.ESTADO, 1, 'PENDIENTE'), 2, 'REALIZADO'), 3, 'ANULADO'),
+            B.NOMBRE,C.NUMERO_CUENTA, C.NUMDOC
+            FROM m_orden O INNER JOIN m_cuenta C
+            ON O.IDCUENTARECIBO = C.IDCUENTA 
+            INNER JOIN de_banco B
+            ON C.IDBANCO = B.IDBANCO 
+            ORDER BY FECHAHORACREACION DESC
+                   """)
     data = cur.fetchall()
     cur.close()
     return data
 
+def obtenerNombreUserLogueado(correo):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("SELECT NOMBRE FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "'")
+    data = cur.fetchall()
+    nombreUsuarioLogueado = data[0][0]
+
+    print(nombreUsuarioLogueado)
+    cur.close()
+    return nombreUsuarioLogueado
+
+def obtenerIdClienteUsuLogueado(correo):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("SELECT ID FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "'")
+    data = cur.fetchmany(1)
+    idCliente = data[0][0]
+    print("Obteniendo Id de cliente logueado")
+    print (idCliente)
+    cur.close()
+    return idCliente
+
+
 @app.route('/ordenes')
+#@login_required
 def Ordenes():
-    listOrdenes = listarOrdenesByIdCliente(1)
-    return render_template('ordenes.html', data = listOrdenes)
+    session.permanent == True
+    print("Listar orden")
+    print(session['role'])
+    if "role" not in session:
+        abort(404)
+
+    if "user" not in session:
+        abort(404)
+
+    key = open("key.key", "rb").read()
+    f = Fernet(key)
+
+    listOrdenes = listarOrdenesByIdCliente(session['idCli'], session['role'])
+    numeroRegistros = len(listOrdenes)
+
+    itemsOrder = []
+    for i in range(0, numeroRegistros):
+        #i = str(i)
+        tupleAux = tuple(listOrdenes[i])
+        # dict == {}
+        # you just don't have to quote the keys
+        #an_item = dict(banco=tupleAux[0], cuenta=tupleAux[1], titular=tupleAux[2], moneda=tupleAux[3])
+        an_item = dict(id = tupleAux[0],codInt = tupleAux[1], codOrden= tupleAux[2], mtoEnvio= tupleAux[3], monEnvio= tupleAux[4],
+        mtoRecibo= tupleAux[5], monRecibo= tupleAux[6], estado= tupleAux[7], banco = tupleAux[8], cuenta= f.decrypt(tupleAux[9]).decode('utf-8') ,
+        numDoc=f.decrypt(tupleAux[10]).decode('utf-8'))
+        itemsOrder.append(an_item)
+
+    session["itemsOrder"] = itemsOrder
+    sesions = getSesiones()
+    #addSesion()
+
+    return render_template('ordenes.html', nameUser = session['nameUser'], sesions=sesions)
+
+@app.route('/editarOrden/<id>')
+def edit_orden(id):
+    cur = mysql.connection.cursor() 
+    cur.execute('SELECT * FROM m_orden WHERE ID = %s',[id] )
+    data = cur.fetchall()
+    print (data[0])
+    return render_template('edit-orden.html', order = data[0])
+
+@app.route('/updateOrder/<id>', methods = ['POST'])
+def update_order(id):
+    if request.method == 'POST':
+        
+        estado = request.form['estado']
+
+        cur = mysql.connection.cursor() 
+        cur.execute(""" 
+            UPDATE m_orden
+            SET ESTADO= %s
+            WHERE ID = %s 
+            """ ,(estado, id))
+        flash('Orden Actualizada Correctamente')
+        mysql.connection.commit()
+        return redirect(url_for('Ordenes'))
+
+@app.route('/editarNumOperacion/<id>')
+def edit_numOperacion(id):
+    cur = mysql.connection.cursor() 
+    cur.execute('SELECT * FROM m_orden WHERE ID = %s',[id] )
+    data = cur.fetchall()
+    print (data[0])
+    return render_template('edit-numOperacion.html',  order = data[0])
+
+@app.route('/updateNumOperation/<id>', methods = ['POST'])
+def update_numOperation(id):
+    if request.method == 'POST':
+        NumeroOperacion = request.form['NumeroOperacion']
+        f = request.files['ComprobanteOperacion']
+        nombre = ('D:\Proyectos\ArchivosWeex\ImagenesUpload\ ').strip() + f.filename
+        print('Subiendo imagen')
+        print(nombre)
+        print(id)
+        print(NumeroOperacion)
+        if f.filename != '':
+            filename = secure_filename(f.filename)
+            f.save(os.path.join('D:\Proyectos\ArchivosWeex\ImagenesUpload',filename))
+
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE m_orden SET CODORDEN = %s, RUTA_COMPROBANTE = %s WHERE ID = %s", 
+                ( NumeroOperacion, nombre, id)) 
+        mysql.connection.commit()
+
+        return redirect(url_for('Ordenes'))
 
 @app.route('/')
 def Redirect():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
     #print(dataTipoCambio)
-    print(vardirf3)
+    print("Validadr")
     print(app.config["SERVER_NAME"])
     return render_template('home.html', dataTC = dataTipoCambio)
 
@@ -599,22 +917,30 @@ def add_client():
         fotoDocumento = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDoc
         fotoDocumentoB = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDocPosterior
         #fotoDocumento = request.form['FotoDocumento']
-
-        now = datetime.now()
-
+        #print("ddddddddddddd")
+        #print(datetime.datetime.now())
+        now = datetime.datetime.now()
+        
         cur = mysql.connection.cursor()
         
-        cur.execute("""
-            INSERT INTO m_cliente
-            VALUES(null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, 
-        (nombre, apellidoPaterno, apellidoMaterno, correoElectronico,celular, generate_password_hash(password), 
-        token, tipoDocumento, numeroDocumento, fechaEmisionDocumento, personaPolitica, tipoPersona, ocupacion,
-        fotoCliente, fotoDocumento, fotoDocumentoB, now))#uso de tupla
-        mysql.connection.commit()    
+        try :
+            cur.execute("""
+                INSERT INTO m_cliente
+                VALUES(null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, 
+            (nombre, apellidoPaterno, apellidoMaterno, correoElectronico,celular, generate_password_hash(password), 
+            token, tipoDocumento, numeroDocumento, fechaEmisionDocumento, personaPolitica, tipoPersona, ocupacion,
+            fotoCliente, fotoDocumento, fotoDocumentoB, now, '1'))#uso de tupla
+            mysql.connection.commit()    
 
-        flash('Usuario registrado correctamente')
-        return redirect(url_for('Index'))
+            flash('Usuario registrado correctamente')
+            return redirect(url_for('login'))
+        except:
+            print ("ERROR !")
+            flash('Numero de documento o email del usuario ya existe en el sistema')
+            return redirect(url_for('Index'))
+            
+        #return redirect(url_for('login'))
         #return 'received'
 """ 
 @app.route('/edit/<id>')
@@ -632,11 +958,56 @@ def get_contact(id):
          return f"<h1>{user}</h1>"
     else: """
 
+@app.route("/tasaCambioAdmin" , methods=['GET','POST'])
+#@login_required
+def tasaCambioAdmin():
+    
+    if "role" not in session:
+        abort(404)
+
+    if "user" not in session:
+        abort(404)
+        
+    dataTipoCambio = TraerTipoCambioDolarSimulacion()
+   
+    if request.method == 'POST':
+        tasaCompra = request.form['tasaCompra']
+        tasaVenta = request.form['tasaVenta']
+
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE tasa_cambio
+                SET COMPRA = %s,
+                    VENTA = %s
+                WHERE id = %s
+        """, (tasaCompra, tasaVenta, 1))
+        mysql.connection.commit()
+        flash('Tasa actuazalida Correctamente')
+
+        return redirect(url_for('tasaCambioAdmin')) 
+    else:
+        print("GET")
+        return render_template("tasa-cambio-admin.html", dataTC = dataTipoCambio,  )
+
+@app.route("/tasa-cambio-post" , methods=['GET','POST'])
+def tasaCambioPost():
+    if request.method == 'POST':
+        dataTipoCambio = TraerTipoCambioDolarSimulacion()
+        session["dataTC"] = dataTipoCambio
+
+        tasaCompra = request.form['tasaCompra']
+        session["tasaCompra"] = tasaCompra    
+
+        tasaVenta = request.form['tasaVenta']
+        session["tasaVenta"] = tasaVenta
+
+        return redirect(url_for('tasaCambioAdmin')) 
+
 @app.route("/operacion-cambio-post" , methods=['GET','POST'])
 def operacionCambioPost():
     if request.method == 'POST':
-        """ dataTipoCambio = TraerTipoCambioDolarSimulacion()
-        session["dataTC"] = dataTipoCambio    """
+        dataTipoCambio = TraerTipoCambioDolarSimulacion()
+        session["dataTC"] = dataTipoCambio
 
         montoEnviar = request.form['montoEnviar']
         session["montoEnviar"] = montoEnviar    
@@ -646,6 +1017,9 @@ def operacionCambioPost():
 
         monedaCambio = request.form['monedaCambio']
         session["monedaCambio"] = monedaCambio
+
+        monedaCambioOpe = monedaCambio[8:9]
+        session["monedaCambioOpe"] = monedaCambioOpe
 
         tipoCambio = session["dataTC"]
 
@@ -662,7 +1036,12 @@ def operacionCambioPost():
 @app.route("/operacion-cambio" , methods=['GET','POST'])
 def operacionCambio():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
-    session["dataTC"] = dataTipoCambio   
+    
+    if "role" not in session:
+        abort(404)
+
+    if "user" not in session:
+        abort(404)
 
     if request.method == 'POST':   
         """ dataTipoCambio = TraerTipoCambioDolarSimulacion()
@@ -675,12 +1054,49 @@ def operacionCambio():
         print("GET")
         return render_template("operacion-cambio.html", dataTC = dataTipoCambio,  )
 
+def convertToBinaryData(filename):
+    # Convert digital data to binary format
+    with open(filename, 'rb') as file:
+        binaryData = file.read()
+    return binaryData
+
+@app.route("/actualizar/numero/operacion", methods=['GET','POST'])
+def operacionActualizarNumeroOperacion():
+    if request.method == 'POST':
+        print("POST")
+        if "GuardarOperacion" in request.form:
+            codIn= session["codinterno"]
+            print("Actualizar con tipo operacion")
+            NumeroOperacion = request.form['NumeroOperacion']
+            
+            f = request.files['ComprobanteOperacion']
+            nombre = 'D:\Proyectos\ArchivosWeex\ImagenesUpload\ ' + f.filename
+            if f.filename != '':
+                filename = secure_filename(f.filename)
+                f.save(os.path.join('D:\Proyectos\ArchivosWeex\ImagenesUpload',filename))
+
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                UPDATE m_orden
+                SET CODORDEN = %s ,
+                    RUTA_COMPROBANTE = %s
+                WHERE CODINTERNO = %s
+                """, 
+                ( NumeroOperacion, nombre.strip(), codIn)) 
+            mysql.connection.commit()
+
+            return redirect(url_for('Ordenes'))
+    else:
+        return redirect(url_for('operacionCambioCuentas'))
 
 @app.route("/operacion/validar/<codinterno>", methods=['GET','POST'])
+#@login_required
 def operacionValidarOrden(codinterno):
+    
     return render_template("orden.html")
 
 @app.route("/procesar-orden", methods=['GET','POST'])
+#@login_required
 def operacionProcesarOrden():
     if request.method == 'POST' and request.form['procesar_orden'] == 'Procesar':
         montoEnviar = session["montoEnviar"]
@@ -709,7 +1125,21 @@ def operacionProcesarOrden():
 
 
 @app.route("/operacion-cambio/cuentas", methods=['GET','POST'])
+#@login_required
 def operacionCambioCuentas():
+    session.permanent == True
+    
+    if "role" not in session:
+        abort(404)
+
+    if "user" not in session:
+        abort(404)
+
+    if "idCli" not in session:
+        abort(404)
+
+    idCliente = session['idCli']
+    monedaOperacionFin = '0'
     if request.method == 'POST':
         if "GuardarCuenta" in request.form:
             key = open("key.key", "rb").read()
@@ -720,6 +1150,7 @@ def operacionCambioCuentas():
             NombreTitular = request.form['NombreTitular']
             tipoDocumento = request.form.get('TipoDocumento', None)
             NumeroDocumento = request.form['NumeroDocumento']
+            TipoMoneda = request.form['TipoMoneda']
 
             NumeroCuentaEncrypted = f.encrypt(NumeroCuenta.encode('utf-8'))
             NombreTitularEncrypted = f.encrypt(NombreTitular.encode('utf-8'))
@@ -731,9 +1162,9 @@ def operacionCambioCuentas():
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO m_cuenta
-                VALUES('', %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
-            ( '1', Banco, '0', '1', NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
+            ( idCliente, Banco, '0', TipoMoneda, NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
             mysql.connection.commit()     
 
             return redirect(url_for('operacionCambioCuentas'))
@@ -754,12 +1185,14 @@ def operacionCambioCuentas():
                     mtoTipoCambio = tipoCambio[0]
                     session["strMonedaEnvio"] = 'Dólares' 
                     session["strMonedaRecibo"] = 'Soles'
+                    session["NroCuentaEmpresa"] = '2003003608422'
             elif(monedaCambio == "Moneda: Soles a Dólares"):
                     monedaEnvio = ObtenerIdMoneda('PEN')[0][0]
                     monedaRecibo = ObtenerIdMoneda('USD')[0][0]
                     mtoTipoCambio = tipoCambio[1]
                     session["strMonedaEnvio"] = 'Soles' 
                     session["strMonedaRecibo"] = 'Dólares'
+                    session["NroCuentaEmpresa"] = '2003003608245'
 
             BancoEnvio = request.form.get('BancoEnvio', None)
             CuentaRecibo = request.form.get('CuentaRecibo', None)
@@ -778,20 +1211,23 @@ def operacionCambioCuentas():
 
             session["nro_orden"] = nro_orden
 
-            now = datetime.now()
-            session["strHoraraInicio"] = str(now)
+            now = datetime.datetime.now() -  datetime.timedelta(hours=1)
+            nowEnd = now + datetime.timedelta(minutes=20)
+            session["strHoraInicio"] = str(now.strftime("%b %d %Y %H:%M"))
+            session["strHoraFin"] = str(nowEnd.strftime("%b %d %Y %H:%M"))
+            #now = datetime.now()
+            #session["strHoraraInicio"] = str(now)
             print("antes de insertar orden")
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO m_orden
-                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
-            ( codinterno, nro_orden, '1', now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1' )) 
+            ( codinterno, nro_orden, idCliente, now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1', '')) 
             mysql.connection.commit()   
-             
 
             return redirect(url_for('operacionValidarOrden', codinterno = codinterno))
-
+            
     elif request.method == 'GET':
 
         key = open("key.key", "rb").read()
@@ -807,20 +1243,23 @@ def operacionCambioCuentas():
         dataTipDoc = TraerDataTipDoc()
         session["dataTipDoc"] = dataTipDoc 
 
-        dataCuentasUsuario = TraerDataCuentas('1')
+        monedaOperacion = session["monedaCambioOpe"]
+        
+        ## Si la moneda de operacion final es de 'Dolares' a 'Soles' --> Se debe mostrar las cuentas en soles
+        monedaOpFinal = '1' if monedaOperacion == 'D' else '2'
+
+        monedaBanco = 'Dolares' if monedaOperacion == 'D' else 'Soles'
+        session["monedaBancoTemp"] = monedaBanco
+        monedaCuenta = 'Soles' if monedaOperacion == 'D' else 'Dolares'
+        session["monedaCuentaTemp"] = monedaCuenta
+
+       
+
+        dataCuentasUsuario = TraerDataCuentasPorMoneda(str(idCliente), monedaOpFinal)
         session["dataCuentasUsuario"] = dataCuentasUsuario
 
-        """     print(len(dataBancoDeDondeEnvias))
-        print(dataBancoDeDondeEnvias)
-
-        print(len(dataCuentasUsuario))
-        print(dataCuentasUsuario) """
-
-        dataCuentasUsuario = TraerDataCuentas('1')
+        #dataCuentasUsuario = TraerDataCuentas(str(idCliente))
         listCuentasUsuario = list(dataCuentasUsuario)
-
-        """ print(dataCuentasUsuario)
-        print(listCuentasUsuario) """
 
         numeroRegistros = len(listCuentasUsuario)
 
@@ -839,15 +1278,46 @@ def operacionCambioCuentas():
 
         return render_template("cuentas.html")
 
+oauth = OAuth(app)
+CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+oauth.register( 
+    name = "google",
+    client_id = weexConstants.CLIENT_ID,
+    client_secret= weexConstants.SECRET_ID,
+    server_metadata_url = CONF_URL,
+    client_kwargs ={
+        'scope' : 'openid email profile'
+    }
+    )
+
+@app.route('/login2')
+def login2():
+    redirect_url = url_for("auth", _external=True)
+    return oauth.google.authorize_redirect(redirect_url)
+
+@app.route('/auth')
+def auth():
+    token = oauth.google.authorize_access_token()
+    response = oauth.google.parse_id_token(token)
+    print(response)
+    return redirect("/")
 
 @app.route('/login', methods=['GET','POST'])
-def login():
+def login():    
+    uriApp=request.path[1:4]
+    if uriApp == 'app' :
+        session['uriApp']= uriApp
+
+    if 'user' in session and request.path == '/login':
+        print('redirect')
+        return redirect(url_for('Cuenta'))
     return render_template("login.html")
 
 
 @app.route('/recover_account', methods=['GET','POST'])
+#@login_required
 def recoverAccount():
-    url = "http://demo.weex.pe/reset_password/"
+    url = "http://weex.pe/reset_password/"
     if request.method == 'POST':
         correo = request.form['correo']
         cur = mysql.connection.cursor()
@@ -896,7 +1366,8 @@ def recoverAccount():
 
 
         #return render_template('edit-contact.html', user = data[0]) 
-        return 'envio de email'
+        #return 'envio de email'
+        return redirect(url_for('Redirect'))
 
         #return render_template("reset-password.html")
 
@@ -937,12 +1408,17 @@ def loginValidate():
             #if(EsCorrectoPasswordHash(user, password)):
                 #print('Inicio sesion correcto')
 
+            rolUser = ObtenerRolByUser(user)
+            print(rolUser)
             if(EsCorrectoPasswordHash(user, password)):
                 print('Inicio sesion correcto')
                 #EsCorrectoPasswordHash(user,password)   
                 #return render_template("index.html")
-                session['user111'] = 'ddfdddddf'
+                session['user'] = user
+                session['role'] = rolUser  
+                
                 return redirect(url_for('Inicio'))
+               
             else:
                 print('password incorrecto')
                 return render_template("login.html")
@@ -981,6 +1457,91 @@ def delete_contact(id):
     mysql.connection.commit()
     flash('Contact Removed Successfully')
     return redirect(url_for('Index'))
+
+def reverse_decorator(function):
+    print('Inside reverse_decorator function')
+    def reverse_wrapper():
+        print('Inside reverse_wrapper function')
+
+        """ if "user" in session:
+            user = session["user"]
+            return f"<h1>{user}</h1>" """
+
+        session.permanent == True
+        print("Listar orden")
+        print(session['user'])	
+
+        return 'Return reverse_wrapper function'
+    return reverse_wrapper
+
+@app.route('/test/acceso')
+@reverse_decorator
+def accesoTest():
+    
+    return "fff"
+
+
+@app.route('/admin', methods=['GET','POST'])
+def admin():
+    print("admin")
+    #validateLoginRequired()
+    #if 'user' in session and request.path == '/login':
+    #    print('redirect')
+    #return redirect(url_for('Cuenta'))
+    return render_template("admin.html")
+
+# @login_manager.user_loader
+# def load_user(username):
+#     return User.query.filter_by(username = username).first()
+
+
+# @login_manager.unauthorized_handler
+# def unauthorized():
+#     return redirect(url_for("login"))
+
+# @login_manager.unauthorized_handler
+# def unauthorized():
+#     return redirect(url_for('Redirect'))
+
+
+# class User(db.Document):
+#     name = db.StringField()
+#     password = db.StringField()
+#     email = db.StringField()
+#     def to_json(self):
+#         return {"name": self.name,
+#                 "email": self.email}
+#     def is_authenticated(self):
+#         return True
+#     def is_active(self):
+#         return True
+#     def is_anonymous(self):
+#         return False
+#     def get_id(self):
+#         return str(self.id)
+
+
+# class User(UserMixin):
+#   def __init__(self,id):
+#     self.id = id
+
+@login_manager.user_loader
+def user_loader():
+    # session.permanent == True
+    # #session['user'] = user
+    # if 'user' in session:
+    #   username = session['user']
+    # else:
+    #     session['user'] = True 
+
+    # print(session['user'])
+
+    """Given *user_id*, return the associated User object.
+
+    :param unicode user_id: user_id (email) user to retrieve
+
+    """
+    return User.query.get(user_id)
 
 if __name__ == '__main__':
    app.run(debug=True)

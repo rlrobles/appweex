@@ -1,0 +1,245 @@
+{% extends 'layout.html' %}
+
+
+{% block body %}
+
+
+<!-- <h2 align="center">WE-EXCHANGE</h2> -->
+<p></p>
+<div class="row">
+
+    <div class="col-lg-4 col-xs-12" style="margin-bottom: 1em;">
+        <!-- <img style="display:block;margin:auto;" src="../static/img/home/exchange_money_home.jpg" alt=""> -->
+        <!-- <img style="display:block;margin:auto;" src="https://dummyimage.com/300x200/2a98c4/fff" alt="" > -->
+        <img style="display:block;margin:auto;" src="../static/img/home/imageSendMoney.png" alt="" >
+    </div>
+
+    <DIV CLASS="row">
+        <P></P>
+    </DIV>
+        
+
+    <div class="col-lg-8 col-xs-12">
+        <h2 align="center">TIPO DE CAMBIO EN LÍNEA</h2>
+        <h5>Tipo de cambio del dólar hoy en Perú</h5>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h6 name="tcCompra" id="tcCompra" class="data-tc-compra">Compra: {{ dataTC.0 }}</h6>
+            </div>
+            <div class="col-md-6">
+                <h6 name="tcVenta" id="tcVenta" class="data-tc-venta">Venta: {{ dataTC.1 }}</h6>
+            </div>
+        </div>
+
+        <!-- <h6>Compra: 3.428</h5>
+        <h6>Venta: 3.442</h5> -->
+        <div class="panel panel-login">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form id="login-form" action="" method="" role="form" style="display: block;">
+                            <div class="form-group">
+                                <input type="text" onkeypress='validate(event)' name="montoEnviar" oninput='calcSimulationRecibir()' id="montoEnviar" tabindex="1" class="form-control" placeholder="Envías dólares" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" onkeypress='validate(event)' name="montoRecibir" oninput='calcSimulationEnviar()' id="montoRecibir" tabindex="2" class="form-control" placeholder="Recibes soles">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="monedaCambio" id="monedaCambio" tabindex="2" class="form-control" placeholder="Moneda: Dólares a Soles" readonly="true">
+                            </div>
+
+                            <!-- recordarme  -->
+                           <!--  <div class="form-group text-center">
+                                <input type="checkbox" tabindex="3" class="" name="remember" id="remember">
+                                <label for="remember"> Recordarme</label>
+                            </div> -->
+                            
+                            
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-info btn-block" onclick="changeCoinCurrency()" >
+                                            Cambiar moneda
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">   
+                                        <button onclick="location.href='/app/login'" class="btn btn-info btn-block"  type="button">
+                                            Realizar operación</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+
+                            
+                            <p></p>
+
+                            <p></p>
+
+                           <!--  <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="text-center">
+                                            <a href="/recover-account" tabindex="5" class="forgot-password">¿Has olvidado tu contraseña?</a>
+                                            <p></p>
+                                            <a href="/register" tabindex="5" class="">¿Eres nuevo en We-Exchange?</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                        </form>
+                    </div>    
+                </div>
+
+                <div class="row">
+                    <p></p>
+                </div> 
+
+                <div class="row">
+                    <p></p></div>
+
+                <div class="row">
+                    <p></p></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <h2 align="center">¿Cómo funciona?</h2>
+    <p></p>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="container">
+                    <img style="display:block;margin:auto;" src="../static/img/home/rsz_1lente2.png" alt="">
+                </div>
+            </div>
+            <p></p>
+            <div class="row">
+                <div class="container">
+                    <h4 align="center">Cotiza tu monto</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="container">
+                    <!-- <p align="center">La plataforma te mostrará la tasa de cambio en tiempo real, ingresa el monto a cambiar y seleccion tu moneda</p> -->
+                    <label align="center">La plataforma te mostrará la tasa de cambio en tiempo real, ingresa el monto a cambiar y seleccion tu moneda</label>
+                </div>
+            </div>
+            <p></p>
+        </div>
+
+        
+        <div class="col-md-6">
+            <div class="row">
+                <div class="container">
+                    <a href="/app/login">
+                        <img style="display:block;margin:auto;" src="../static/img/home/rsz_2login.png" alt="">
+                    </a>
+                </div>
+            </div>
+            <p></p>
+            <div class="row">
+                <div class="container">
+                    <a href="/app/login" style="text-decoration: none;">
+                        <div>
+                            <h4 align="center">Inicia sesión</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="container">
+                    <p align="center">Registra tus datos completos, espera la verificación del sistema y disfruta del servicio exclusivo que We-Exchange tiene para ti. !Empieza ya!</p>
+                </div>
+            </div>
+            <p></p>
+        </div>
+        
+        
+            
+
+        <div class="w-100"></div>
+        
+
+        <div class="col-md-6">
+            <div class="row">
+                <div class="container">
+                    <!-- <img style="display:block;margin:auto;" src="https://dummyimage.com/150x100/658/fff" alt=""> -->
+                    <img style="display:block;margin:auto;" src="../static/img/home/rsz_coins2.png" alt="">
+                    <p></p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="container">
+                    <h4 align="center">Transfiere a We-Ex</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="container">
+                    <p align="center">El portal te mostrará el número de cuenta a donde realizarás el depósito a través de tu banca online. Envíanos el comprobante de la transferencia</p>
+                </div>
+            </div>
+            <p></p>
+        </div>
+
+        <div class="col-md-6">
+            <div class="row">
+                <div class="container">
+                    <img style="display:block;margin:auto;" src="../static/img/home/rsz_2dollar1.png" alt="">
+                    <p></p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="container">
+                    <h4 align="center">Recibe tu cambio</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="container">
+                    <label align="center">Verifica la transferencia de tu dinero al número de cuenta que indicaste</label>
+                </div>
+            </div>
+            <p></p>
+        </div>
+        
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+
+        <div class="w-100"></div>
+        <div class="row"><p></p></div>
+      
+    </div>
+
+    
+
+    
+
+   
+
+    
+
+    
+{% endblock %}
