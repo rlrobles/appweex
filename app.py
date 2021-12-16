@@ -582,13 +582,13 @@ def listarOrdenesByIdCliente(idCliente, rolId):
     id= str(idCliente)
     cur = mysql.connection.cursor()
     if rolId == '1':
-        cur.execute("SELECT O.ID,O.CODINTERNO, O.CODORDEN,O.MTOENVIO, REPLACE (REPLACE(O.MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'), O.MTORECIBO, REPLACE (REPLACE(O.MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES'), REPLACE(REPLACE (REPLACE(O.ESTADO, 1, 'PENDIENTE'), 2, 'REALIZADO'), 3, 'ANULADO'),B.NOMBRE, C.NUMERO_CUENTA, C.NUMDOC FROM m_orden O INNER JOIN m_cuenta C ON O.IDCUENTARECIBO = C.IDCUENTA INNER JOIN de_banco B ON C.IDBANCO = B.IDBANCO  WHERE C.IDCLIENTE = "+ id + " ORDER BY FECHAHORACREACION DESC ")		
+        cur.execute("SELECT O.ID,O.CODINTERNO, O.CODORDEN,O.MTOENVIO, REPLACE (REPLACE(O.MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'), O.MTORECIBO, REPLACE (REPLACE(O.MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES'), REPLACE(REPLACE (REPLACE(O.ESTADO, 1, 'PENDIENTE'), 2, 'REALIZADO'), 3, 'ANULADO'),B.NOMBRE, C.NUMERO_CUENTA, C.NUMDOC, O.RUTA_COMPROBANTE FROM m_orden O INNER JOIN m_cuenta C ON O.IDCUENTARECIBO = C.IDCUENTA INNER JOIN de_banco B ON C.IDBANCO = B.IDBANCO  WHERE C.IDCLIENTE = "+ id + " ORDER BY FECHAHORACREACION DESC ")		
     elif rolId == '2':
         cur.execute("""
         SELECT O.ID, O.CODINTERNO, O.CODORDEN,O.MTOENVIO, REPLACE (REPLACE(O.MONEDAENVIO, 1, 'SOLES'), 2, 'DOLARES'),
             O.MTORECIBO, REPLACE (REPLACE(O.MONEDARECIBO, 1, 'SOLES'), 2, 'DOLARES'),
             REPLACE(REPLACE (REPLACE(O.ESTADO, 1, 'PENDIENTE'), 2, 'REALIZADO'), 3, 'ANULADO'),
-            B.NOMBRE,C.NUMERO_CUENTA, C.NUMDOC
+            B.NOMBRE,C.NUMERO_CUENTA, C.NUMDOC,  O.RUTA_COMPROBANTE
             FROM m_orden O INNER JOIN m_cuenta C
             ON O.IDCUENTARECIBO = C.IDCUENTA 
             INNER JOIN de_banco B
@@ -649,7 +649,7 @@ def Ordenes():
         #an_item = dict(banco=tupleAux[0], cuenta=tupleAux[1], titular=tupleAux[2], moneda=tupleAux[3])
         an_item = dict(id = tupleAux[0],codInt = tupleAux[1], codOrden= tupleAux[2], mtoEnvio= tupleAux[3], monEnvio= tupleAux[4],
         mtoRecibo= tupleAux[5], monRecibo= tupleAux[6], estado= tupleAux[7], banco = tupleAux[8], cuenta= f.decrypt(tupleAux[9]).decode('utf-8') ,
-        numDoc=f.decrypt(tupleAux[10]).decode('utf-8'))
+        numDoc=f.decrypt(tupleAux[10]).decode('utf-8'), rutaComprobante= tupleAux[11] )
         itemsOrder.append(an_item)
 
     session["itemsOrder"] = itemsOrder
@@ -1156,9 +1156,6 @@ def operacionCambioCuentas():
             NombreTitularEncrypted = f.encrypt(NombreTitular.encode('utf-8'))
             NumeroDocumentoEncrypted = f.encrypt(NumeroDocumento.encode('utf-8'))
 
-            print(tipoDocumento)
-            print(NumeroDocumento)
-
             cur = mysql.connection.cursor()
             cur.execute("""
                 INSERT INTO m_cuenta
@@ -1199,7 +1196,7 @@ def operacionCambioCuentas():
 
             stringLength = 7
             lettersAndDigits  = string.ascii_uppercase + string.digits
-            nro_orden = ''.join(random.sample(lettersAndDigits, stringLength))
+            """ nro_orden = ''.join(random.sample(lettersAndDigits, stringLength))
 
             while ExisteOrden(nro_orden) == True:
                 stringLength = 7
@@ -1209,7 +1206,7 @@ def operacionCambioCuentas():
                 if ExisteOrden(nro_orden) == False:
                     break
 
-            session["nro_orden"] = nro_orden
+            session["nro_orden"] = nro_orden """
 
             now = datetime.datetime.now() -  datetime.timedelta(hours=1)
             nowEnd = now + datetime.timedelta(minutes=20)
@@ -1223,7 +1220,7 @@ def operacionCambioCuentas():
                 INSERT INTO m_orden
                 VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, 
-            ( codinterno, nro_orden, idCliente, now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1', '')) 
+            ( codinterno, '', idCliente, now, montoEnviar, monedaEnvio, BancoEnvio, montoRecibir, monedaRecibo, CuentaRecibo, mtoTipoCambio, '1', '')) 
             mysql.connection.commit()   
 
             return redirect(url_for('operacionValidarOrden', codinterno = codinterno))

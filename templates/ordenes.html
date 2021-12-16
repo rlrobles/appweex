@@ -24,23 +24,27 @@
       <table class = "table table-striped table-bordered bg-white">
          <thead>     
     <tr>
-             <th>NUMERO DE ORDEN</th> 
-             <th>NUMERO DE OPERACION</th>
-        <th>MONTO ENVIO</th>
-        <th>MONEDA</th>
-        <th>MONTO RECIBIDO</th>
-        <th>MONEDA MONTO RECIBIDO</th>
-             <th>BANCO ORIGEN</th>
-             <th>NUMERO DE CUENTA DESTINO</th> 
-             <th>NUMERO DE DOCUMENTO</th>                  
+         <th>PEDIDO#</th> 
+         <th>NUMERO DE OPERACION</th>
+         <th>MONTO ENVIO</th>
+         <th>MONEDA</th>
+         <th>MONTO RECIBIDO</th>
+         <th>MONEDA MONTO RECIBIDO</th>
+         <th>BANCO ORIGEN</th>
+         <th>NUMERO DE CUENTA DESTINO</th> 
+         {% if session["role"] == '2' %}
+            <th>NUMERO DE DOCUMENTO</th> 
+         {% endif %}                 
         <th>ESTADO</th>
              {% if session["role"] == '2' %}
              <th>OPERACION</th>
              {% endif %}
              {% if session["role"] == '1' %}
-               <th>ACTUALIZAR NRO DE OPERACION</th>
-             {% endif %}  
-             
+             <th>ACTUALIZAR NRO DE OPERACION</th>
+             {% endif %}              
+         {% if session["role"] == '2' %}
+             <th>RUTA COMPROBANTE</th> 
+         {% endif %}            
       </tr>
     </thead>
          {% for item in session["itemsOrder"] %}
@@ -53,7 +57,9 @@
                <td> {{ item.monRecibo }} </td>
                <td> {{ item.banco }} </td>
                <td> {{ item.cuenta }} </td>
+               {% if session["role"] == '2' %}
                <td> {{ item.numDoc }} </td>
+               {% endif %}        
                <td> {{ item.estado }} </td>
                {% if session["role"] == '2' %}
                   <td> <a href="/editarOrden/{{item.id}}"  class="btn btn-primary">Editar Estado</a> </td> 
@@ -61,7 +67,10 @@
                {% if session["role"] == '1' %}
                   <td> <a href="/editarNumOperacion/{{item.id}}"  class="btn btn-primary">Editar</a>
                   </td>
-               {% endif %}   
+               {% endif %}
+               {% if session["role"] == '2' %}
+               <td> {{ item.rutaComprobante }} </td>
+               {% endif %} 
                
          </td>
        </tr>
