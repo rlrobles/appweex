@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>We exchange App</title>
+        <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">    
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/home/logo.jpeg') }}" />
+    </head>
+    <body style="background: #470303;font-family:Nunito Sans, -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol">
+        <p class="aligncenter">
+            <img src="{{ url_for('static', filename='img/home/logo.jpeg') }}" alt="centered image"/>
+        </p>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+                <div style="color: #27633c;background-color: #dbf2e3;border-color: #cdedd8;" class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        <div class="row">
+                <div class="col-md-4 offset-md-4">
+                    <div class="panel panel-login">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <form id="login-form" action="/loginValidate" method="post" role="form" style="display: block;">
+                                        <div class="form-group">
+                                            <input type="email" name="username" id="username" tabindex="1" class="form-control" placeholder="Usuario" value="" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Contraseña" required>
+                                            <span class="mdi mdi-eye" id="mostrar">
+                                            <span class="pwdtxt" style="cursor:pointer;">Mostrar contraseña</span>
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-info btn-block">
+                                            Iniciar sesión
+                                        </button>
+                                        </div>
+                                        <p/>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="text-center">
+                                                        <a href="/recover-account" tabindex="5" class="forgot-password">¿Has olvidado tu contraseña?</a>
+                                                        <p/>
+                                                        <a href="/register" tabindex="5" class="">¿Eres nuevo en We-Exchange?</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+             <!--scripts-->
+            <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+            <!-- <script src="{{url_for('static', filename='js/main.js')}}"></script> -->
+            <script src="../static/js/main.js"></script>
+
+            <script>
+                $(document).ready(function () {
+                $('#mostrar').click(function () {
+                    //Comprobamos que la cadena NO esté vacía.
+                    if ($(this).hasClass('mdi-eye') && ($("#password").val() != "")) {
+                        $('#password').removeAttr('type');
+                        $('#mostrar').addClass('mdi-eye-off').removeClass('mdi-eye');
+                        $('.pwdtxt').html("Ocultar contraseña");
+                    } else {
+                        $('#password').attr('type', 'password');
+                        $('#mostrar').addClass('mdi-eye').removeClass('mdi-eye-off');
+                        $('.pwdtxt').html("Mostrar contraseña");
+                    }
+                });
+            });
+        
+                function mostrarContrasena() {
+                    var tipo = document.getElementById("password");
+                    if (tipo.type == "password") {
+                        tipo.type = "text";
+                    } else {
+                        tipo.type = "password";
+                    }
+                };
+            </script>
+            <style>
+                .aligncenter {
+                    text-align: center;
+                }
+            </style>        
+    </body>
+</html>
+
+

@@ -11,44 +11,43 @@
     <div class="col-md-12" style="margin-bottom: 1em;">
         <!-- <img style="display:block;margin:auto;" src="../static/img/home/exchange_money_home.jpg" alt=""> -->
         <!-- <img style="display:block;margin:auto;" src="https://dummyimage.com/300x200/2a98c4/fff" alt="" > -->
-        <h2 align="center">Tu operación de cambio es la siguiente:</h2>
+        <h2  style="font-weight: bold; color:#1a1b1bbd;align-items: center;font-style: normal; margin-left:30px">Tu operación de cambio es la siguiente:</h2>
         <!-- <h5>Tipo de cambio del dólar hoy en Perú</h5> -->
 
         <div class="panel panel-cuentas">
             <div class="panel-body">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <table class='table table-striped table-bordered bg-white table-sm'>
-                            <thead>
-                                <tr>
-                                    <th>Cambio</th>
-                                    <th>Envio</th>
-                                    <th>Recibo</th>
-                                    <th>Tipo de Cambio</th>
-                                </tr>
+                <div class="row" >
+                    <div class="col-lg-11  table-responsive" style="padding:30px;background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px; margin-bottom:40px;margin: 20px 40px;">
+                        <table class='table table-borderless table-hover '>
+                            <thead style="border-bottom: 1px solid #1a1b1bbd;">
+                               <tr>
+                                <th class="">Cambio</th>
+                                <th class="">Envio</th>
+                                <th class="">Recibo</th>
+                                <th class="">Tipo de Cambio</th>
+                               </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>{{ session["monedaCambio"] }}</td>
+                              <tr>
+                                <td id="monedaCambio">{{ session["monedaCambio"] }}</td>
                                 <td>{{ session["montoEnviar"] }}</td>
                                 <td>{{ session["montoRecibir"] }}</td>
                                 <td>{{ session["tipoCambio"] }}</td>
-                                
-                            </tr>
+                            </tr>                               
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <p></p>
-
-                <form action="/app/operacion-cambio/cuentas" method = "POST" enctype="multipart/form-data">
+               <div class="row">
+                <div class="col-lg-11" style="padding:40px;background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px; margin-left:40px;">
+                    <form action="/app/operacion-cambio/cuentas"  method = "POST" enctype="multipart/form-data" >
                     <div class="row">
                         <div class="col-lg-6">
-                            <h2>Elige el banco de donde envías tu dinero:</h2>
+                                <h4>Elige el banco de donde envías tu dinero:</h4>
                             <div class="form-group">
                                 <label>Banco en {{ session["monedaBancoTemp"] }}: </label>
-                                <select name="BancoEnvio" class="form-control" style="width: 100%;" id="BancoEnvio" required>
+                                    <select name="BancoEnvio" class="form-control form-select" aria-label="Default select example" style="width: 100%;" id="BancoEnvio" required>
                                     <option value="" disabled selected>Banco</option>
                                         {% for banco in session["dataBanco1"] %}
                                         <option value="{{ banco.0 }}">{{ banco.1 }}</option>
@@ -56,57 +55,79 @@
                                 </select>
                             </div>
                         </div>
-
+    
                         <div class="col-lg-6">
-                            <h2>Elige la cuenta donde recibiras tu dinero:</h2>
+                                <h4>Elige la cuenta donde recibiras tu dinero:</h4>
                             
                             <div class="form-group">
                                 <label>Cuentas en  {{ session["monedaCuentaTemp"] }}:</label>
-                                <select name="CuentaRecibo" class="form-control" style="width: 100%;" id="CuentaRecibo" required>
+                                    <select name="CuentaRecibo" class="form-control " style="width: 100%;" id="CuentaRecibo" required>
                                     <option value="" disabled selected>Cuentas</option>
                                     {% for item in session["items"] %}
                                     <option value="{{ item.id }}"> {{ item.banco }}  - {{ item.cuenta }}</option>
                                     {% endfor %}    
                                 </select>
                             </div>
-
+    
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-primary"  style="width: 100%;" data-toggle="modal" data-target="#exampleModalCenter">
+                                <button type="button" class="btn btn-success"  style="border-radius: 40px;width: 90%; align-items: center;text-align: center;background: #1E3F1E;" data-toggle="modal" data-target="#exampleModalCenter">
                                 Agregar cuenta
                             </button>
-                            
 
-                            
-                               
-                            
-                        </div>
                     </div>
-
+    
+                        </div><br>
                 
-                    <div class="row">
-                        <div class="col-lg-12">
+                
+                        <div class="row" >
+                            <div class="col-md-12" >
                             <div class="form-group">
-                                <button class="btn btn-secondary">Regresar</button>
-                                <button type="submit" name="ProcesarOrden" value="Procesar" class="btn btn-primary">Procesar</button>
+                                <!-- <button class="btn btn-secondary" style="border-radius: 0px;align-items: center;text-align: center;border: 1px solid #1E3F1E;">Regresar</button> -->
+                                    <input type="button" onclick="history.back()" class="btn btn-secondary"  style="border-radius: 40px;align-items: center;text-align: center;border: 1px solid #1E3F1E;" name="" value="Regresar">                                    
+                                    <button type="submit" name="ProcesarOrden" value="Procesar" class="btn btn-success" style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;">Procesar</button>
                             </div>
                         </div>
                     </div>
                 </form>
+                </div>
+               </div>
+                
+           
 
 
                 <form action="/app/operacion-cambio/cuentas" method = "POST" enctype="multipart/form-data">
                  <!-- Modal -->
-                 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
+                 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+                    <div class="modal-dialog modal-dialog-centered" role="document" >
+                    <div class="modal-content" style="background: #FFFFFF;border-radius: 20px; padding: 20px;">
                         <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLongTitle">Agregar nueva cuenta</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                         </div>
-                        <div class="modal-body">
+
+
+                        <div class="modal-body">  
                             <div class="form-group">
+                                <label>Seleccione el tipo de cuenta:</label> <br>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" >
+                                            <label class="form-check-label" for="inlineRadio1">Personal</label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" checked>
+                                            <label class="form-check-label" for="inlineRadio2">Tercero</label>
+                                        </div>
+                                    </div>
+                                  </div>
+                            </div>
+                            
+                            <div class="form-group" id="Banco">
                                 <label>Banco:</label>
                                 <select name="Banco" class="form-control" style="width: 100%;" id="Banco" required>
                                     <option value="" disabled selected>Banco</option>
@@ -116,37 +137,37 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" id="NroCuenta">
                                 <label for="NumeroCuenta">Numero de la cuenta:</label>
-                                <input type="text" name="NumeroCuenta"  value="" id="NumeroCuenta" onkeypress="return soloNumeros(event)" tabindex="1" class="form-control" placeholder="Número de la cuenta" required>
+                                <input type="text" name="NumeroCuenta"  value="" id="NumeroCuenta" onkeypress="soloNumeros(event)" tabindex="1" class="form-control" placeholder="Número de la cuenta" required>
                             </div>
                             
-                            <div class="form-group">
+                            <div class="form-group" id='CCI'>
                                 <label for="NumeroCCI">CCI:</label>
-                                <input type="text" name="NumeroCCI"  value="" id="NumeroCCI" onkeypress="return soloNumeros(event)" oninput="return validarNumCuenta();" tabindex="1" class="form-control" placeholder="Número de CCI" required>
+                                <input type="text" name="NumeroCCI"  value="" id="NumeroCCI" onkeypress="soloNumeros(event)" oninput="validarNumCuenta();" tabindex="1" class="form-control" placeholder="Número de CCI" required>
                             </div>
                             
-                            <div class="form-group">
+                            <div class="form-group" id='TipoMoneda'>
                                 <label>Tipo de Moneda:</label>
-                                <select name="TipoMoneda" class="form-control" style="width: 100%;" id="TipoMoneda" required>
-                                    <option value="" disabled selected>TipoMoneda</option>
-                                    <option value="1">Soles</option>
-                                    <option value="2">Dolares</option>
+                                <select name="TipoMoneda" class="form-control" style="width: 100%;" id="TipoMonedaSelect" required>
+                                    <option disabled>Tipo de Moneda</option>
+                                    <option value="1" >Soles</option>
+                                    <option value="2" selected>Dolares</option>
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" id='NombreTitular'>
                                 <label for="NombreTitular">Nombre del Titular:</label>
-                                <input type="text" name="NombreTitular"  value="" id="NombreTitular" onkeypress="return sololetras(event)" oninput="return validarNumCCI();" tabindex="1" class="form-control" placeholder="Nombe del Titular" required>
+                                <input type="text" name="NombreTitular"  value="" id="idNombreTitular" onkeypress="sololetras(event)" oninput="validarNumCCI();" tabindex="1" class="form-control" placeholder="Nombe del Titular" required>
                             </div>
 
                         <!--  <div class="form-group">
                                 <input type="submit" style="width: 100%;" onclick="return false;" class="btn btn-primary" name="upvote" value="upvote" />
                             </div> -->
 
-                            <div class="form-group">
+                            <div class="form-group" id='TipoDocumento'>
                                 <label>Tipo de Documento:</label>
-                                <select name="TipoDocumento" class="form-control" style="width: 100%;" id="TipoDocumento" required>
+                                <select name="TipoDocumento" class="form-control" style="width: 100%;" id="idTipoDocumento" required>
                                     <option value="" disabled selected>Tipo de documento</option>
                                         {% for tipdoc in session["dataTipDoc"] %}
                                         <option value="{{ tipdoc.0 }}">{{ tipdoc.1 }}</option>
@@ -154,15 +175,15 @@
                                 </select>
                             </div>
                             
-                            <div class="form-group">
+                            <div class="form-group" id='NumeroDocumento'>
                                 <label for="NumeroDocumento">Numero del documento:</label>
-                                <input type="text" name="NumeroDocumento"  value="" id="NumeroDocumento" onkeypress="return soloNumeros(event)" tabindex="1" class="form-control" placeholder="Numero de documento" required>
+                                <input type="text" name="NumeroDocumento"  value="" id="idNumeroDocumento" onkeypress="soloNumeros(event)" tabindex="1" class="form-control" placeholder="Numero de documento" required>
                             </div>
 
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" name="GuardarCuenta" value="Guardar_Cuenta" class="btn btn-primary">Guardar cuenta</button>
+                        <div style="text-align:end;align-items: flex-end;">
+                            <button type="button" class="btn btn-secondary" style="border-radius: 40px;align-items: center;text-align: center;border: 1px solid #1E3F1E; width:30%;" data-dismiss="modal">Close</button>
+                            <button type="submit" name="GuardarCuenta" value="Guardar_Cuenta" style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;width: 35%;" class="btn btn-success">Guardar cuenta</button>
                         </div>
                     </div>
                     </div>
@@ -185,17 +206,8 @@
 
         
 </div>
-
-
-
-    
     <p></p>
     <div class="row">
-
-
-
-
-        
         <div class="w-100"></div>
         <div class="row"><p></p></div>
 
@@ -205,8 +217,7 @@
         <div class="w-100"></div>
         <div class="row"><p></p></div>
       
-    </div>
-  
+    </div>  
 
 {% endblock %}
 
@@ -215,7 +226,29 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>
     
+    function selectElement(id, valueToSelect) {    
+        let element = document.getElementById(id);
+        element.value = valueToSelect;
+    }   
+
+    function validarMonedaTC(){
+
+        monedaTC=$('#monedaCambio').text();
+
+        monedaTCdest=monedaTC.split(" ").slice(-1)
+
+        if(monedaTCdest == "Dólares"){
+            selectElement('TipoMonedaSelect', '2');
+        }else if(monedaTCdest == "Soles"){
+            selectElement('TipoMonedaSelect', '1');
+        }
+
+    }
+
+    validarMonedaTC();
+
     function validarNumCuenta(){
+	
 	
 	//Almacenamos los valores
 	nombre=$('#NumeroCuenta').val();
@@ -312,6 +345,49 @@
         }
     }
         
+    function hideA(x) {
+    if (x.checked) {
+        //document.getElementById("NombreDelTitular").style.visibility = "hidden";
+        document.getElementById("NombreDelTitular").hide();
+    }
+    }
+
+    function hideB(x) {
+    if (x.checked) {
+     document.getElementById("B").style.visibility = "hidden";
+     document.getElementById("A").style.visibility = "visible";
+    }
+    }
+
+    
+    $(document).on('click','#inlineRadio1',function() {
+         if($("#inlineRadio1").is(':checked')){
+          $('#NombreTitular').hide();
+          $('#TipoDocumento').hide();
+          $('#NumeroDocumento').hide();
+
+          $('#idNombreTitular').removeAttr('required');
+          $('#idTipoDocumento').removeAttr('required');
+          $('#idNumeroDocumento').removeAttr('required');
+
+          $('#Banco').show();
+          $('#NroCuenta').show();
+          $('#CCI').show();
+            }
+        });
+        
+        $(document).on('click','#inlineRadio2',function() {
+         if($("#inlineRadio2").is(':checked')){
+          $('#Banco').show();
+          $('#NroCuenta').show();
+          $('#CCI').show();
+
+          $('#NombreTitular').show();
+          $('#TipoDocumento').show();
+          $('#NumeroDocumento').show();
+            }
+        });
+
 </script>
 
 {% endblock %}

@@ -2,25 +2,39 @@
 
 {% block body %}
 
-<div class="col-md-3 offset-md-3">
-    <div class="card card-body">
-        <form action="/updateNumOperation/{{order.0}}" method="POST" role="form" style="display: block;" enctype="multipart/form-data" onsubmit="return confirm('Tu orden esta siendo verificada, te avisaremos cuando tu cambio haya sido enviado');">
+<div class="row"  style="padding:30px;background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px; margin-bottom:40px;margin: 10px 40px;">
+    <div class="col-md-11 " >
+        <form  action="/updateNumOperation/{{order.0}}" method="POST" role="form" style="box-shadow: none;border: none;" enctype="multipart/form-data" onsubmit="return confirm('Tu orden esta siendo verificada, te avisaremos cuando tu cambio haya sido enviado');">
             <div class="form-group">
                 <label for="" class="form-control">Número de Operacion</label>
-				<input type="text" name="NumeroOperacion" value="{{order.2}}" id="NumeroOperacion" tabindex="1" class="form-control" placeholder="Número de Operacion" required>
+				<input type="number" name="NumeroOperacion" value="{{order.2}}" id="NumeroOperacion" tabindex="1" class="form-control" placeholder="Número de Operacion" required>
             </div>
             
-            <div class="form-group">
-                <label for="ComprobanteOperacion">Adjuntar comprobante</label>
-                <input type="file" name="ComprobanteOperacion"  value="" id="ComprobanteOperacion" tabindex="1" class="form-control" placeholder="Comprobante">
+            <div class="form-group" >
+                <label for="" class="form-control" >Adjuntar comprobante</label>
+                <input type="file" name="ComprobanteOperacion"  value="" id="ComprobanteOperacion" tabindex="1" class="form-control" placeholder="" required>
             </div>
             
-            <div class="form-group">
-                <button type="submit" class="btn btn-success btn-block">Guardar</button>
+            <div class="col-md-3">
+                <button style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;" type="submit" onclick=" validateForm()" class="btn btn-success btn-block">Guardar</button>
             </div>            
         </form>
     </div>
 </div>
 
+{% endblock %}
 
+{% block script %}
+<script>
+
+    function validateForm() {
+        if ($('#NumeroOperacion').val().length != 0) {
+            
+            $('#ComprobanteOperacion').removeAttr("required");
+        }else if($('#ComprobanteOperacion').val()  !=''){
+            $('#NumeroOperacion').removeAttr("required");
+        }
+		
+    }
+</script>
 {% endblock %}

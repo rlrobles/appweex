@@ -1,43 +1,39 @@
-{% extends 'layout.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>We-Exchange App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/home/logo.jpeg') }}" />
+</head>
 
 {% block body %}
-<h2 align="center">WE-EXCHANGE</h2>
-<p></p>
+<h2 style="font-weight: bold; color:#1a1b1bbd;align-items: center;font-style: normal;padding-top:50px;text-align: center;">WE-EXCHANGE</h2>
+<br>
 <div class="row">
     <div class="col-md-4 offset-md-4">
         <div class="panel panel-login">
             <div class="panel-body">
                 <div class="row">
                     <div class="col-lg-12">
-                        <form id="recover-account-form" action="/app/recover_account" method="post" role="form" style="display: block;">
+                        <form id="recover-account-form" action="/app/recover_account" method="post" role="form" style="display: block;" onsubmit="return confirm('Revisa tu Correo Electrónico, se envió un enlace para el cambio de contraseña');">
                             <div class="form-group">
                                 <label>Por favor, ingrese su correo electronico para recuperar tu contraseña</label>
-                                <input type="text" name="correo" id="correo" tabindex="1" class="form-control" placeholder="Correo" value="">
+                                <input type="text" name="correo" id="correo" tabindex="1" class="form-control" placeholder="Correo" value="" required>
                             </div>
                             
-                         <!--    
                             <div class="form-group">
-                                <button type="submit" class="btn btn-info btn-block">
-                                Aceptar
-                            </button> -->
-                            <!-- <div class="form-group">
-                                <a href="/recover-account" class="btn btn-info btn-block">Restablecer contraseña</a>
-                            </div> -->
-
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-success btn-block">
+                                <button type="submit" style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;color: #ffff;padding: 10px;" class="btn  btn-block">
                                 Restablecer contraseña
                             </button>
                             </div>
 
                             <div class="form-group">
-                                <a href="/app/login" class="btn btn-danger btn-block">Cancelar</a>
+                                <a href="/login" class="btn  btn-block" style="border-radius: 40px;align-items: center;text-align: center;background:#BE1823;color: #ffff;padding: 10px;" >Cancelar</a>
                             </div>
-
-                      <!--       <div class="form-group">
-                                <button type="submit" class="btn btn-danger btn-block">
-                                Cancelar
-                            </button> -->
 
                             <p></p>
 

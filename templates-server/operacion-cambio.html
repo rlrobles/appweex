@@ -7,32 +7,31 @@
 <!-- <h2 align="center">WE-EXCHANGE</h2> -->
 <p></p>
 <div class="row">
+    <h2 style="font-weight: bold; color:#1a1b1bbd;align-items: center;font-style: normal; margin:10px 50px;">Operación de cambio </h2>
 
-    <div class="col-md-12" style="margin-bottom: 1em;">
-        <!-- <img style="display:block;margin:auto;" src="../static/img/home/exchange_money_home.jpg" alt=""> -->
+    <div class="col-md-11" style="background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px; margin-bottom:40px;margin-left: 50px;margin-top: 20px;padding: 0px 40px;">
+       
+        <!--<img style="display:block;margin:auto;" src="../static/img/home/exchange_money_home.jpg" alt=""> -->
         <!-- <img style="display:block;margin:auto;" src="https://dummyimage.com/300x200/2a98c4/fff" alt="" > -->
-        <h2 align="center">Operación de cambio </h2>
+           
         <!-- <h5>Tipo de cambio del dólar hoy en Perú</h5> -->
-
-
-        <div class="row">
+    
+     
+            <div class="row"  style="text-align: center;align-items: center;margin: 30px 0px;">
             <div class="col-md-6">
-                <h6 name="tcCompra" id="tcCompra" class="data-tc-compra">Tipo de cambio compra es: {{ dataTC.0 }}</h6>
+                    <h5 name="tcCompra" id="tcCompra" class="data-tc-compra">Tipo de cambio compra es: {{ dataTC.0 }}</h5>
             </div>
             <div class="col-md-6">
-                <h6 name="tcVenta" id="tcVenta" class="data-tc-venta">Tipo de cambio venta es: {{ dataTC.1 }}</h6>
+                    <h5 name="tcVenta" id="tcVenta" class="data-tc-venta">Tipo de cambio venta es: {{ dataTC.1 }}</h5>
             </div>
         </div>
-
-
-
-
+        
         <div class="panel panel-login">
             <div class="panel-body">
                 <div class="row">
                     <div class="col-lg-12">
                         <form id="operacion-tc-form" action="/app/operacion-cambio-post" method="POST" role="form" style="display: block;"  onsubmit="return validateForm()">
-
+    
                             <div class="form-group">
                                 <label for="montoEnviar">Envias:</label>
                                 <input type="text" onkeypress='validate(event)' name="montoEnviar" oninput='calcSimulationRecibir()' id="montoEnviar" tabindex="1" class="form-control" placeholder="Envías dólares" value="">
@@ -41,11 +40,11 @@
                                 <label for="montoRecibir">Recibes:</label>
                                 <input type="text" onkeypress='validate(event)' name="montoRecibir" oninput='calcSimulationEnviar()' id="montoRecibir" tabindex="2" class="form-control" placeholder="Recibes soles">
                             </div>
-
+    
                             <div class="form-group">
                                 <input type="text" name="monedaCambio" id="monedaCambio" tabindex="2" class="form-control" placeholder="Moneda: Dólares a Soles" readonly="true">
                             </div>
-
+    
                             <!-- recordarme  -->
                            <!--  <div class="form-group text-center">
                                 <input type="checkbox" tabindex="3" class="" name="remember" id="remember">
@@ -53,11 +52,11 @@
                             </div> -->
                             
                             
-
-                            <div class="row">
+    
+                                <div class="row" style="align-items: center;text-align: center;">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <button type="button" class="btn btn-primary btn-block" onclick="changeCoinCurrency()" >
+                                            <button type="button" class="btn btn-success" onclick="changeCoinCurrency()" style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;" >
                                             Cambiar moneda
                                         </button>
                                     </div>
@@ -68,22 +67,22 @@
                                         <!-- <button type = "submit"  onclick="location.href='/operacion-cambio/cuentas'; enableElementInput()" class="btn btn-info btn-block" >
                                             Realizar operación
                                         </button> -->
-                                        <button type = "submit"  onclick=" enableElementInput(); location.href='/app/operacion-cambio/cuentas'" class="btn btn-primary btn-block" >
+                                            <button type = "submit"  onclick=" enableElementInput(); location.href='/operacion-cambio/cuentas'" class="btn btn-success" style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;">
                                             Realizar operación
                                         </button>
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-
+    
+    
+    
+    
+    
                             
                             <p></p>
-
+    
                             <p></p>
-
+    
                            <!--  <div class="form-group">
                                 <div class="row">
                                     <div class="col-lg-12">
@@ -95,24 +94,26 @@
                                     </div>
                                 </div>
                             </div> -->
-
+    
                         </form>
                     </div>    
                 </div>
-
+    
                 <div class="row">
                     <p></p>
                 </div> 
-
+    
                 <div class="row">
                     <p></p></div>
-
+    
                 <div class="row">
                     <p></p></div>
-
+    
             </div>
         </div>
+    
     </div>
+
 
         
 </div>

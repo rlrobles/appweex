@@ -1,9 +1,7 @@
 /* html {
   height: 100%;
 }
-body {
-  min-height: 100%;
-} */
+ */
 /* html, body {
   height: 100%;
 } */
@@ -29,3 +27,7 @@ a.textColor{
   color: #FFFFFF;
 }
  */
+
+ .aligncenter {
+  text-align: center;
+}

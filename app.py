@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, make_response 
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, make_response, send_from_directory
+from ApiSendBlue import sendMailOperationConfirm, sendMailResetPassword
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 from cryptography.fernet import Fernet
-#from flask_mail import Mail
+from flask_mail import Mail
 from cryptography.fernet import Fernet as frt
 import json
 import requests
@@ -32,15 +33,25 @@ from array import array
 from flask import abort 
 from authlib.integrations.flask_client import OAuth
 
-app = Flask(__name__)
-#app.config['UPLOAD_FOLDER'] = "./Imagenes/Orden"
-app.config['UPLOAD_FOLDER'] = "D:\Proyectos\ArchivosWeex\ImagenesUpload"
+# RUTA LOCAL WINDOWS
+# UPLOAD_FOLDER = os.path.abspath(".\\uploads\\")
+# UPLOAD_FOLDER = os.path.abspath("uploads")
+UPLOAD_FOLDER = os.path.abspath("./uploads")
+# RUTA LOCAL WINDOWS
+#UPLOAD_DNI = os.path.abspath(".\\uploads\\Personal\\")
+#UPLOAD_DNI = os.path.abspath("uploadsPersonal")
+UPLOAD_DNI = os.path.abspath("./uploads/Personal/")
+
+#Instanciamos un objeto de tipo Mail
+mail = Mail()  
 
 app = Flask(__name__,
             static_url_path='', 
             static_folder='static',
             template_folder='templates')
-
+            
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["UPLOAD_DNI"] = UPLOAD_DNI
 # flask-login
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -396,7 +407,7 @@ def validateLoginRequired():
         return redirect(url_for('login'))
 
 
-@app.route('/home')
+""" @app.route('/home')
 def Home():
     #validateLoginRequired()
     #print(str(uuid.uuid4()))
@@ -406,7 +417,7 @@ def Home():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
     session["dataTC"] = dataTipoCambio
     #print(dataTipoCambio)
-    return render_template('home.html', dataTC = dataTipoCambio)
+    return render_template('home.html', dataTC = dataTipoCambio) """
 
 def getSesiones():
     #validateLoginRequired()
@@ -442,8 +453,10 @@ def Inicio():
     session['idCli']=idCliente
     name = obtenerNombreUserLogueado(session['user'])
     session['nameUser'] = name
-    role = session['role']
+    session['tipoDoc'] = obtenerTipoDocUsuLogueado(session['user'])
+    session['numDoc'] = obtenerNumDocUsuLogueado(session['user'])
     print("inicio form")
+    role = session['role']
     print(getSesiones())
     sesions = getSesiones()
     return render_template('inicio.html', nameUser = name, role = role, sesions=sesions)
@@ -568,15 +581,36 @@ def DatosPersonales():
         abort(404)
 
     if "user" not in session:
-        abort(404)
-
+        abort(404)   
+            
     user = session['user']
     cur = mysql.connection.cursor() 
     cur.execute("SELECT * FROM m_cliente WHERE CORREO_ELECTRONICO = '" + user + "'")
     data = cur.fetchall()
     cur.close()
 
+
     return render_template('datos-personales.html', contact = data[0])
+
+@app.route('/updatePersonalInfo', methods = ['POST'])
+def updatePersonalInfo():
+    if request.method == 'POST':
+        telefono = request.form['Telefono']
+        ocupacion = request.form['Ocupacion']
+
+        try:
+            cur = mysql.connection.cursor()             
+            cur.execute("UPDATE m_cliente SET CELULAR = %s, OCUPACION = %s WHERE ID = %s", 
+                (telefono,ocupacion, session['idCli'] ))
+            flash('Datos Actualizados')
+
+            mysql.connection.commit()
+        except:
+            print ("ERROR !")
+            flash('Error al actualizar datos personales')
+            return redirect(url_for('DatosPersonales'))
+
+        return redirect(url_for('DatosPersonales'))
 
 def listarOrdenesByIdCliente(idCliente, rolId):
     id= str(idCliente)
@@ -620,6 +654,28 @@ def obtenerIdClienteUsuLogueado(correo):
     print (idCliente)
     cur.close()
     return idCliente
+
+def obtenerTipoDocUsuLogueado(correo):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("SELECT ID_TIPO_DOCUMENTO FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "'")
+    data = cur.fetchmany(1)
+    tipoDoc = data[0][0]
+    print("Obteniendo tipo doc de cliente logueado")
+    print (tipoDoc)
+    cur.close()
+    return tipoDoc
+
+def obtenerNumDocUsuLogueado(correo):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("SELECT NUMERO_DOCUMENTO FROM m_cliente WHERE CORREO_ELECTRONICO = '" + correo + "'")
+    data = cur.fetchmany(1)
+    numDoc = data[0][0]
+    print("Obteniendo Num doc clieente logueado")
+    print (numDoc)
+    cur.close()
+    return numDoc
 
 
 @app.route('/ordenes')
@@ -695,29 +751,36 @@ def update_numOperation(id):
     if request.method == 'POST':
         NumeroOperacion = request.form['NumeroOperacion']
         f = request.files['ComprobanteOperacion']
-        nombre = ('D:\Proyectos\ArchivosWeex\ImagenesUpload\ ').strip() + f.filename
+        nombre =f.filename.strip()
         print('Subiendo imagen')
         print(nombre)
         print(id)
         print(NumeroOperacion)
         if f.filename != '':
-            filename = secure_filename(f.filename)
-            f.save(os.path.join('D:\Proyectos\ArchivosWeex\ImagenesUpload',filename))
+            filename = secure_filename(f.filename.strip())
+            f.save(os.path.join(app.config["UPLOAD_FOLDER"] ,filename))
 
         cur = mysql.connection.cursor()
         cur.execute("UPDATE m_orden SET CODORDEN = %s, RUTA_COMPROBANTE = %s WHERE ID = %s", 
                 ( NumeroOperacion, nombre, id)) 
         mysql.connection.commit()
+        
+        #Invocar API Sendblue
+        sendMailOperationConfirm(session["user"], session['nameUser'], 2)
 
         return redirect(url_for('Ordenes'))
 
-@app.route('/')
+@app.route("/uploads/<filename>")
+def get_file(filename):
+
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+""" @app.route('/')
 def Redirect():
     dataTipoCambio = TraerTipoCambioDolarSimulacion()
-    #print(dataTipoCambio)
-    print("Validadr")
+    
     print(app.config["SERVER_NAME"])
-    return render_template('home.html', dataTC = dataTipoCambio)
+    return render_template('home.html', dataTC = dataTipoCambio) """
 
 @app.route('/register')
 def Index(): ## funcion para manejar la peticion
@@ -731,9 +794,6 @@ def Index(): ## funcion para manejar la peticion
     cur.close()
     cur2.close()
     return render_template('add-client.html', tipo_documentos = data, tipo_persona = data2) #flask ya tiene configurado el nombre de la carpeta templates
-
-    #return render_template('index.html', contacts = data) #flask ya tiene configurado el nombre de la carpeta templates
-    #return 'Hello World'
 
 
 @app.route('/add_test_2', methods=['GET','POST'])
@@ -858,53 +918,13 @@ def add_test():
 def add_client():
     print('print inicio add cliente')
     if request.method == 'POST':
-        ## Validación de la carga de imagenes ############################
-        ## Validación de la foto del cliente ############################
-        """
-        if request.files:   
-            if not allowed_image_filesize(request.cookies.get("filesizeFoto")) or not allowed_image_filesize(request.cookies.get("filesizeFotoDoc")):
-                print('El archivo excedio el tamano maximo')
-                return redirect(url_for('Index'))
-                #return redirect(request.url)
-
-            #print(request.cookies)
-            imagenFoto = request.files["imagenFoto"] ## name property
-            imagenFotoDocFrontal = request.file["imagenFotoDocFrontal"]
-            imagenFotoDocPosterior = request.file["imagenFotoDocPosterior"]
-
-            if imagenFoto.filename == "" or imagenFotoDocFrontal == "" or imagenFotoDocPosterior == "":
-                print('Foto de usuario debe tener un nombre')
-                return redirect(url_for('Index'))
-                #return redirect(request.url)
-
-            if not allowed_image(imagenFoto.filename) or not allowed_image(imagenFotoDocFrontal.filename) or not allowed_image(imagenFotoDocPosterior.filename):
-                print('La extensión de la foto del cliente no esta permitida')
-                return redirect(url_for('Index'))
-                #return redirect(request.url)
-
-            else:
-                filenameFoto = secure_filename(imagenFoto.filename)
-                filenameFotoDocFrontal = secure_filename(imagenFotoDocFrontal.filename)
-                filenameFotoDocPosterior = secure_filename(imagenFotoDocPosterior.filename)
-
-            
-            imagenFoto.save(os.path.join(app.config["IMAGE_UPLOADS"], filenameFoto))
-            imagenFotoDocFrontal.save(os.path.join(app.config["IMAGE_UPLOADS"], filenameFotoDocFrontal))
-            imagenFotoDocPosterior.save(os.path.join(app.config["IMAGE_UPLOADS"], filenameFotoDocPosterior))
-        """
         
-    #################################################################################################
-
-        filenameFoto = ''
-        filenameFotoDoc = ''
-        filenameFotoDocPosterior = ''
-
         nombre = request.form['Nombre']
         apellidoPaterno = request.form['ApellidoPaterno']
         apellidoMaterno = request.form['ApellidoMaterno']
         correoElectronico = request.form['CorreoElectronico']
         celular = request.form['Celular']
-        password = request.form['Password']
+        password = request.form['password   ']
         token = str(uuid.uuid4())
         tipoDocumento = request.form.get('TipoDocumento', None)
         numeroDocumento = request.form['NumeroDocumento']
@@ -912,13 +932,21 @@ def add_client():
         personaPolitica = request.form.get('PersonaPolitica', None)
         tipoPersona = request.form.get('TipoPersona', None)
         ocupacion = request.form['Ocupacion']
-        #fotoCliente = request.form['FotoCliente']
         fotoCliente = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFoto
-        fotoDocumento = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDoc
-        fotoDocumentoB = '' #app.config["IMAGE_UPLOADS"] + "\\" + filenameFotoDocPosterior
-        #fotoDocumento = request.form['FotoDocumento']
-        #print("ddddddddddddd")
-        #print(datetime.datetime.now())
+        f1 = request.files['imagenFotoDocFrontal']
+        nombreF =f1.filename.strip()
+        if nombreF != '':
+            filename = secure_filename(nombreF)
+            f1.save(os.path.join(app.config["UPLOAD_DNI"] ,filename))
+        fotoDocumento = nombreF
+
+        f2 = request.files['imagenFotoDocPosterior']
+        nombreP =f2.filename.strip()
+        if nombreP != '':
+            filename = secure_filename(nombreP)
+            f2.save(os.path.join(app.config["UPLOAD_DNI"] ,filename))
+        fotoDocumentoB = nombreP
+        
         now = datetime.datetime.now()
         
         cur = mysql.connection.cursor()
@@ -932,6 +960,11 @@ def add_client():
             token, tipoDocumento, numeroDocumento, fechaEmisionDocumento, personaPolitica, tipoPersona, ocupacion,
             fotoCliente, fotoDocumento, fotoDocumentoB, now, '1'))#uso de tupla
             mysql.connection.commit()    
+
+            
+            #Invocar API sendblue
+            sendMailOperationConfirm(correoElectronico, nombre, 1)
+
 
             flash('Usuario registrado correctamente')
             return redirect(url_for('login'))
@@ -1070,22 +1103,30 @@ def operacionActualizarNumeroOperacion():
             NumeroOperacion = request.form['NumeroOperacion']
             
             f = request.files['ComprobanteOperacion']
-            nombre = 'D:\Proyectos\ArchivosWeex\ImagenesUpload\ ' + f.filename
+            nombre = f.filename
             if f.filename != '':
                 filename = secure_filename(f.filename)
-                f.save(os.path.join('D:\Proyectos\ArchivosWeex\ImagenesUpload',filename))
+                f.save(os.path.join(app.config["UPLOAD_FOLDER"] ,filename))
 
             cur = mysql.connection.cursor()
-            cur.execute("""
-                UPDATE m_orden
-                SET CODORDEN = %s ,
-                    RUTA_COMPROBANTE = %s
-                WHERE CODINTERNO = %s
-                """, 
-                ( NumeroOperacion, nombre.strip(), codIn)) 
-            mysql.connection.commit()
+            try :
+                cur.execute("""
+                    UPDATE m_orden
+                    SET CODORDEN = %s ,
+                        RUTA_COMPROBANTE = %s
+                    WHERE CODINTERNO = %s
+                    """, 
+                    ( NumeroOperacion, nombre.strip(), codIn)) 
+                mysql.connection.commit()
 
-            return redirect(url_for('Ordenes'))
+                #Invocar API sendblue
+                sendMailOperationConfirm(session["user"], session['nameUser'], 2)
+                
+                return redirect(url_for('Ordenes'))
+            except:
+                print ("ERROR !")
+                flash('Error al guardar comprobante')
+                return redirect(url_for('operacionCambioCuentas'))
     else:
         return redirect(url_for('operacionCambioCuentas'))
 
@@ -1144,26 +1185,35 @@ def operacionCambioCuentas():
         if "GuardarCuenta" in request.form:
             key = open("key.key", "rb").read()
             f = Fernet(key)
-
+            
             Banco = request.form['Banco']
-            NumeroCuenta = request.form['NumeroCuenta']
+            NumeroCuenta = request.form['NumeroCuenta']            
+            TipoMoneda = request.form['TipoMoneda']
+
             NombreTitular = request.form['NombreTitular']
             tipoDocumento = request.form.get('TipoDocumento', None)
             NumeroDocumento = request.form['NumeroDocumento']
-            TipoMoneda = request.form['TipoMoneda']
 
+            if NombreTitular == '' :
+                NombreTitular = session['nameUser']
+                tipoDocumento = session['tipoDoc']
+                NumeroDocumento = session['numDoc']   
+            
             NumeroCuentaEncrypted = f.encrypt(NumeroCuenta.encode('utf-8'))
             NombreTitularEncrypted = f.encrypt(NombreTitular.encode('utf-8'))
             NumeroDocumentoEncrypted = f.encrypt(NumeroDocumento.encode('utf-8'))
 
-            cur = mysql.connection.cursor()
-            cur.execute("""
-                INSERT INTO m_cuenta
-                VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, 
-            ( idCliente, Banco, '0', TipoMoneda, NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
-            mysql.connection.commit()     
-
+            try:
+                cur = mysql.connection.cursor()
+                cur.execute("""
+                    INSERT INTO m_cuenta
+                    VALUES(0, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, 
+                ( idCliente, Banco, '0', TipoMoneda, NumeroCuentaEncrypted, NombreTitularEncrypted, tipoDocumento, NumeroDocumentoEncrypted )) 
+                mysql.connection.commit()     
+            except:
+                print ("ERROR !")
+                
             return redirect(url_for('operacionCambioCuentas'))
             
         if "ProcesarOrden" in request.form:
@@ -1208,10 +1258,11 @@ def operacionCambioCuentas():
 
             session["nro_orden"] = nro_orden """
 
-            now = datetime.datetime.now() -  datetime.timedelta(hours=1)
+            #now = datetime.datetime.now() -  datetime.timedelta(hours=1)
+            now = datetime.datetime.now()
             nowEnd = now + datetime.timedelta(minutes=20)
-            session["strHoraInicio"] = str(now.strftime("%b %d %Y %H:%M"))
-            session["strHoraFin"] = str(nowEnd.strftime("%b %d %Y %H:%M"))
+            session["strHoraInicio"] = str(now.strftime("%d/%m/%Y %H:%M:%S"))
+            session["strHoraFin"] = str(nowEnd.strftime("%d/%m/%Y %H:%M:%S"))
             #now = datetime.now()
             #session["strHoraraInicio"] = str(now)
             print("antes de insertar orden")
@@ -1287,10 +1338,21 @@ oauth.register(
     }
     )
 
-@app.route('/login2')
-def login2():
-    redirect_url = url_for("auth", _external=True)
-    return oauth.google.authorize_redirect(redirect_url)
+# @app.route('/login2')
+# def login2():
+#     redirect_url = url_for("auth", _external=True)
+#     return oauth.google.authorize_redirect(redirect_url)
+
+@app.route('/login3', methods=['GET','POST'])
+def login3():    
+    uriApp=request.path[1:4]
+    if uriApp == 'app' :
+        session['uriApp']= uriApp
+
+    if 'user' in session and request.path == '/login3':
+        print('redirect')
+        return redirect(url_for('Cuenta'))
+    return render_template("login2.html")
 
 @app.route('/auth')
 def auth():
@@ -1299,11 +1361,18 @@ def auth():
     print(response)
     return redirect("/")
 
+@app.route('/')
 @app.route('/login', methods=['GET','POST'])
-def login():    
+def login():
+    
+    session['uriBase']= request.url_root
     uriApp=request.path[1:4]
     if uriApp == 'app' :
         session['uriApp']= uriApp
+        session['uriBase']= request.url_root + uriApp 
+        
+    print("Validando uri")
+    print(session['uriBase'])
 
     if 'user' in session and request.path == '/login':
         print('redirect')
@@ -1312,59 +1381,32 @@ def login():
 
 
 @app.route('/recover_account', methods=['GET','POST'])
-#@login_required
 def recoverAccount():
-    url = "http://weex.pe/reset_password/"
+    #url = "http://weex.pe/reset_password/"
+    #url = "http://127.0.0.1:5000/reset_password/"
+    session['uriBase']= request.url_root
+    uriApp=request.path[1:4]
+    if uriApp == 'app' :
+        session['uriApp']= uriApp
+        session['uriBase']= request.url_root + uriApp 
+        
+    print("Validando uri")
+    print(session['uriBase'])
+    
     if request.method == 'POST':
         correo = request.form['correo']
         cur = mysql.connection.cursor()
-        cur.execute("SELECT ID, CORREO_ELECTRONICO, TOKEN FROM m_cliente WHERE CORREO_ELECTRONICO = %s", [correo])   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
+        cur.execute("SELECT ID, CORREO_ELECTRONICO,TOKEN,NOMBRE FROM m_cliente WHERE CORREO_ELECTRONICO = %s", [correo])   ###The reasoning is that execute's second parameter represents a list of the objects to be converted
         data = cur.fetchall()
         data2 = data[0]
         id = data2[0]
         token = data2[2]
+        clientName = data2[3]
 
-        #print("ingeso aqui")
+        sendMailResetPassword(correo, clientName,id,token,session["uriBase"])
+        
 
-        html_content='Para crear su nueva contraseña por favor ingresa al siguiente link en el navegador: ' + url + str(id) +'/' + token 
-
-        params = {
-            "receiver_email_address": "royerleandroroblesvega@gmail.com",
-            "html_content": html_content
-        }
-
-        print("params")
-        print(params)
-
-        responseCorreo = correoweex.enviarCorreo(params, correo, html_content)
-        print("respuesta correo")
-        print(responseCorreo['status_code'])
-
-        """ message = Mail(
-            from_email='alonsog@we-ex.pe',
-            #to_emails='freddychpo@gmail.com',
-            to_emails= correo,
-            subject='Recuperacion de contraseña',
-            #html_content='Para crear su nueva contraseña por favor ingresa al siguiente link en el navegador: ' + url + 'id/' + 'token' )
-            html_content='Para crear su nueva contraseña por favor ingresa al siguiente link en el navegador: ' + url + str(id) +'/' + token )
-        try:
-            #sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-            #sg = SendGridAPIClient(os.environ.get(apikey))
-            sg = SendGridAPIClient('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')
-            response = sg.send(message)
-            print(response.status_code)
-            print(response.body)
-            print(response.headers)
-            print("try")
-        except Exception as e:
-            print(e)
-            print(e.body)
-            print("exception") """
-
-
-        #return render_template('edit-contact.html', user = data[0]) 
-        #return 'envio de email'
-        return redirect(url_for('Redirect'))
+        return redirect(url_for('login'))
 
         #return render_template("reset-password.html")
 
@@ -1408,7 +1450,7 @@ def loginValidate():
             rolUser = ObtenerRolByUser(user)
             print(rolUser)
             if(EsCorrectoPasswordHash(user, password)):
-                print('Inicio sesion correcto')
+                flash('Inicio sesion correcto')
                 #EsCorrectoPasswordHash(user,password)   
                 #return render_template("index.html")
                 session['user'] = user
@@ -1417,10 +1459,11 @@ def loginValidate():
                 return redirect(url_for('Inicio'))
                
             else:
-                print('password incorrecto')
+                
+                flash('Password incorrecto')
                 return render_template("login.html")
         else:
-            print('no existe usuario')
+            flash('no existe usuario')
             return render_template("login.html")
 
     
@@ -1428,7 +1471,7 @@ def loginValidate():
 @app.route('/recover-account', methods=['GET'])
 def recover_account():
     return render_template("recover-account.html")
-
+        
 @app.route('/update/<id>', methods = ['POST']) #methods es igual a un arreglo POST
 def update_contact(id):
     if request.method == 'POST':
@@ -1446,6 +1489,7 @@ def update_contact(id):
         mysql.connection.commit()
         flash('Contact updated successfully')
         return redirect(url_for('Index'))
+
 
 @app.route('/delete/<string:id>')
 def delete_contact(id):

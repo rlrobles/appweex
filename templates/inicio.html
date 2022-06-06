@@ -4,7 +4,7 @@
 <!--link rel="stylesheet" href="/static/css/main.css">-->>
 
 {% block body %}
-<h1 class="mt-4">Panel de Control</h1>
+<h2 class="mt-4" style="font-weight: bold; color:#1a1b1bbd;align-items: center;font-style: normal; margin-left:30px">Panel de Control</h2>
 <!-- <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
 
 <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
@@ -12,45 +12,44 @@
 
  <p></p>
 
-<div class="row">
+<div class="row centar" style="margin-left: 20px">
     {% if session["role"] == '1' %}
-      <div class="col-sm-6">
-        <div class="card">
+      <div class="col-sm-6" >
+        <div class="card" style="padding:20px;background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px; margin-bottom:40px;">
           <div class="card-body">
             <h5 class="card-title">Operación de Cambio</h5>
             <p class="card-text">En esta sección podrá realizar las operaciones de tipo de cambio</p>
-            <a href="/operacion-cambio" class="btn btn-primary" >Ir a la sección</a>
+            <a href="/operacion-cambio" class="btn btn-success" style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;" >Ir a la sección</a>
           </div>
         </div>
       </div>
     {% endif %} 
     
     <div class="col-sm-6">
-      <div class="card">
+      <div class="card" style="padding:20px;background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px;margin-bottom:40px;">
         <div class="card-body">
           <h5 class="card-title">Órdenes</h5>
           <p class="card-text">En esta sección podrá acceder al historial de órdenes</p>
-          <a href="/ordenes" class="btn btn-primary">Ir a la sección</a>
+          <a href="/ordenes" class="btn btn-success"style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;">Ir a la sección</a>
         </div>
       </div>
     </div>
-  </div>
-  <div class="row">
+
     <div class="col-sm-6">
-      <div class="card">
+      <div class="card" style="padding:20px;background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px; margin-bottom:40px;">
         <div class="card-body">
           <h5 class="card-title">Datos personales</h5>
           <p class="card-text">En esta seccióon podrá consultar y modificar sus datos personales</p>
-          <a href="/datos-personales" class="btn btn-primary">Ir a la sección</a>
+          <a href="/datos-personales" class="btn btn-success"style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;">Ir a la sección</a>
         </div>
       </div>
     </div>
     <div class="col-sm-6">
-      <div class="card">
+      <div class="card" style="padding:20px;background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px; margin-bottom:40px;">
         <div class="card-body">
           <h5 class="card-title">Cuentas</h5>
           <p class="card-text">En esta sección podrá consultar sus cuentas personales</p>
-          <a href="/cuenta" class="btn btn-primary">Ir a la sección</a>
+          <a href="/cuenta" class="btn btn-success"style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;">Ir a la sección</a>
         </div>
       </div>
     </div>
@@ -60,7 +59,7 @@
       <div class="card-body">
         <h5 class="card-title">Cambiar Tasa Admin</h5>
         <p class="card-text">En esta sección podrá cambiar la tasa de cambio de Soles/Dolares</p>
-        <a href="/tasaCambioAdmin" class="btn btn-primary">Ir a la sección</a>
+        <a href="/tasaCambioAdmin" class="btn btn-success"style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E;">Ir a la sección</a>
       </div>
     </div>
   </div>

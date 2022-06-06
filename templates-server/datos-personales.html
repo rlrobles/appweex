@@ -3,49 +3,72 @@
 
 {% block body %}
 
-<h2> Datos Personales </h2>
-<div class="col-md-4 offset-md-4">
-    <div class="card card-body">
-        <form action="" method = "POST">
+<h2 style="font-weight: bold; color:#1a1b1bbd;align-items: center;font-style: normal; margin:20px 60px;"> Datos Personales </h2>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div style="color: #27633c;background-color: #dbf2e3;border-color: #cdedd8;" class="alert alert-dismissible fade show"  role="alert">
+        {{ message }}
+        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>  
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+<div class="col-md-11">
+    <div class="card card-body" style="background: #FFFFFF;box-shadow: 0px 0px 7px rgba(129, 145, 164, 0.17);border-radius: 20px; margin-bottom:40px;margin-left: 50px;margin-top: 20px;padding:40px;">
+        <form action="/app/updatePersonalInfo" method = "POST">
+            
+            <div class="form-group">
             <label for="" class="label">Nombres</label>
-            <div class="form-group">
-                <input type="text" name="Nombres" value="{{contact.1}}" placeholder="Fullname" class="form-group" readonly>
+                <input class="form-control" type="text" name="Nombres" value="{{contact.1}}" readonly>                            
             </div>
 
-            <label for="" class="label">Apellido Paterno</label>
-            <div class="form-group">
-                <input type="text" name="ApePaterno" value="{{contact.2}}" placeholder="Apellido Paterno" class="form-group" readonly>
+            
+            <div style="display: flex; justify-content: space-between;">
+                <div class="form-group" style="width:45%;">
+                    <label for="" class="label">Apellido Paterno </label>
+                <input type="text" name="ApePaterno" value="{{contact.2}}" placeholder="Apellido Paterno" class="form-control" readonly>
             </div>
-
+    
+                
+                <div class="form-group" style="width:45%;">
             <label for="" class="label">Apellido Materno</label>
-            <div class="form-group">
-                <input type="text" name="ApeMaterno" value="{{contact.3}}" placeholder="Apellido Materno" class="form-group" readonly>
+                <input type="text" name="ApeMaterno" value="{{contact.3}}" placeholder="Apellido Materno" class="form-control" readonly>
             </div>
-
-            <label for="" class="label">Email</label>
-            <div class="form-group">
-                <input type="text" name="Email" value="{{contact.4}}" placeholder="Email" class="form-group"readonly>
-            </div>
-
-            <label for="" class="label">Telefono</label>
-            <div class="form-group">
-                <input type="text" name="Telefono" value="{{contact.5}}" placeholder="Telefono" class="form-group">
-            </div>
-
-            <label for="" class="label">Numero de Documento</label>
-            <div class="form-group">
-                <input type="text" name="Numero de documento" value="{{contact.9}}" placeholder="Numero de Documento" class="form-group" readonly>
+    
             </div>
             
-            <label for="" class="label">Ocupacion</label>
-            <div class="form-group">
-                <input type="text" name="Ocupacion" value="{{contact.13}}" placeholder="Ocupacion" class="form-group">
+           <div  style="display: flex; justify-content: space-between;">
+            <div class="form-group" style="width:45%;">
+            <label for="" class="label">Email</label>
+                <input type="text" name="Email" value="{{contact.4}}" placeholder="Email" class="form-control"readonly>
             </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-success btn-block">
-                Save
-            </button>
+            
+            <div class="form-group"  style="width:45%;">
+            <label for="" class="label">Telefono</label>
+                <input type="text" name="Telefono" value="{{contact.5}}" placeholder="Telefono" class="form-control">
+            </div>
+           </div>
+
+            
+            <div style="display: flex; justify-content: space-between;">
+                <div class="form-group" style="width:45%;">
+            <label for="" class="label">Numero de Documento</label>
+                <input type="text" name="Numero de documento" value="{{contact.9}}" placeholder="Numero de Documento" class="form-control" readonly>
+            </div>
+            
+               
+                <div class="form-group"  style="width: 45%;">
+            <label for="" class="label">Ocupacion</label>
+                <input type="text" name="Ocupacion" value="{{contact.13}}" placeholder="Ocupacion" class="form-control">
+            </div>
+            </div>
+
+            <div class="form-group" >
+                <button type="submit" class="btn btn-success " style="border-radius: 40px;align-items: center;text-align: center;background: #1E3F1E; margin-top: 20px;width: 20%;">Save </button>
             </div>
         </form>
     </div>

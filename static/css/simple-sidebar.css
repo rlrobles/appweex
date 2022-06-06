@@ -3,6 +3,9 @@
  * Copyright 2013-2020 Start Bootstrap
  * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-simple-sidebar/blob/master/LICENSE)
  */
+body{
+  font-family: "Nunito Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
 
  #wrapper {
     overflow-x: hidden;
@@ -47,4 +50,18 @@
   #wrapper.toggled #sidebar-wrapper {
     margin-left: -15rem;
   }
+  #menu-toggle{
+   margin-right: 20px;
+  }
+}
+
+
+@media (max-width:650px) {
+  #menu-toggle{
+    visibility: hidden;
+  }
+  .navbar-toggler{
+    margin-top: -50px;
+  }
+  
 }
